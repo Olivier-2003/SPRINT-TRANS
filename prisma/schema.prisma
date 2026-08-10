@@ -1,0 +1,436 @@
+// Schemat bazy danych SPRINT-TRANS.
+// Pełny opis modelu (uzasadnienie decyzji projektowych) w docs/plan.md, sekcja 3.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Konta panelu
+// ---------------------------------------------------------------------------
+
+enum AdminRole {
+  ADMIN
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         AdminRole @default(ADMIN)
+  createdAt    DateTime  @default(now())
+  lastLoginAt  DateTime?
+
+  calculatorSettingsUpdated CalculatorSettings[]
+  priceQuotesCreated        PriceQuote[]
+  bookingsCreated           Booking[]
+  contactLogs               InquiryContactLog[]
+
+  @@map("admin_users")
+}
+
+// ---------------------------------------------------------------------------
+// Kierowcy
+// ---------------------------------------------------------------------------
+
+enum DriverEmploymentStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Driver {
+  id                String                 @id @default(cuid())
+  firstName         String
+  lastName          String
+  phone             String
+  email             String?
+  licenseCategories String
+  employmentStatus  DriverEmploymentStatus @default(ACTIVE)
+  notes             String?
+  createdAt         DateTime               @default(now())
+
+  availability       DriverAvailability[]
+  bookingAssignments BookingDriver[]
+
+  @@map("drivers")
+}
+
+/// Placeholder pod przyszły algorytm automatycznego przydziału: jawna niedostępność
+/// kierowcy (np. urlop). Nieużywana przez żadną logikę biznesową na tym etapie.
+model DriverAvailability {
+  id            String    @id @default(cuid())
+  driverId      String
+  driver        Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  date          DateTime  @db.Date
+  availableFrom DateTime?
+  availableTo   DateTime?
+  note          String?
+
+  @@index([driverId, date])
+  @@map("driver_availability")
+}
+
+// ---------------------------------------------------------------------------
+// Autobusy
+// ---------------------------------------------------------------------------
+
+enum BusStatus {
+  ACTIVE
+  SERVICE
+  INACTIVE
+}
+
+model Bus {
+  id                 String    @id @default(cuid())
+  registrationNumber String    @unique
+  brandModel         String
+  seats              Int
+  productionYear     Int?
+  description        String?
+  features           Json?
+  status             BusStatus @default(ACTIVE)
+  createdAt          DateTime  @default(now())
+
+  photos             BusPhoto[]
+  availability       BusAvailability[]
+  bookingAssignments BookingBus[]
+
+  @@map("buses")
+}
+
+model BusPhoto {
+  id        String @id @default(cuid())
+  busId     String
+  bus       Bus    @relation(fields: [busId], references: [id], onDelete: Cascade)
+  url       String
+  sortOrder Int    @default(0)
+
+  @@index([busId, sortOrder])
+  @@map("bus_photos")
+}
+
+/// Placeholder pod przyszły algorytm — jawna niedostępność autobusu (np. przegląd).
+model BusAvailability {
+  id            String    @id @default(cuid())
+  busId         String
+  bus           Bus       @relation(fields: [busId], references: [id], onDelete: Cascade)
+  date          DateTime  @db.Date
+  availableFrom DateTime?
+  availableTo   DateTime?
+  note          String?
+
+  @@index([busId, date])
+  @@map("bus_availability")
+}
+
+// ---------------------------------------------------------------------------
+// Linie regularne
+// ---------------------------------------------------------------------------
+
+model RegularLine {
+  id               String   @id @default(cuid())
+  name             String
+  originLabel      String
+  destinationLabel String
+  description      String?
+  active           Boolean  @default(true)
+  createdAt        DateTime @default(now())
+
+  stops     LineStop[]
+  schedules LineSchedule[]
+  inquiries Inquiry[]
+
+  @@map("regular_lines")
+}
+
+model LineStop {
+  id                   String      @id @default(cuid())
+  lineId               String
+  line                 RegularLine @relation(fields: [lineId], references: [id], onDelete: Cascade)
+  stopName             String
+  sortOrder            Int
+  arrivalOffsetMinutes Int
+
+  @@index([lineId, sortOrder])
+  @@map("line_stops")
+}
+
+/// Godziny kursów danej linii. daysOfWeek: 1 (poniedziałek) .. 7 (niedziela).
+/// departureTime/arrivalTime w formacie "HH:MM" — rozkład tygodniowy, bez pełnej daty.
+model LineSchedule {
+  id            String      @id @default(cuid())
+  lineId        String
+  line          RegularLine @relation(fields: [lineId], references: [id], onDelete: Cascade)
+  daysOfWeek    Int[]
+  departureTime String
+  arrivalTime   String
+  price         Decimal     @db.Decimal(10, 2)
+  validFrom     DateTime    @db.Date
+  validTo       DateTime?   @db.Date
+
+  @@index([lineId])
+  @@map("line_schedules")
+}
+
+// ---------------------------------------------------------------------------
+// Wycieczki
+// ---------------------------------------------------------------------------
+
+model Trip {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  priceInfo   String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  photos    TripPhoto[]
+  inquiries Inquiry[]
+
+  @@map("trips")
+}
+
+model TripPhoto {
+  id        String @id @default(cuid())
+  tripId    String
+  trip      Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  url       String
+  sortOrder Int    @default(0)
+
+  @@index([tripId, sortOrder])
+  @@map("trip_photos")
+}
+
+// ---------------------------------------------------------------------------
+// Kalkulator
+// ---------------------------------------------------------------------------
+
+/// Bieżące stawki kalkulatora, edytowalne z panelu. Historyczne wyceny (PriceQuote)
+/// przechowują własny snapshot stawek użytych w danym momencie i NIE są przeliczane
+/// wstecz przy zmianie tej tabeli.
+model CalculatorSettings {
+  id          String     @id @default(cuid())
+  ratePerKm   Decimal    @db.Decimal(10, 2)
+  baseFee     Decimal    @db.Decimal(10, 2)
+  updatedAt   DateTime   @updatedAt
+  updatedById String?
+  updatedBy   AdminUser? @relation(fields: [updatedById], references: [id])
+
+  @@map("calculator_settings")
+}
+
+/// Cache odpowiedzi z zewnętrznego API tras dla pary punktów — oszczędność limitu API.
+model RouteDistanceCache {
+  id              String   @id @default(cuid())
+  originText      String
+  destinationText String
+  distanceKm      Decimal  @db.Decimal(10, 2)
+  computedAt      DateTime @default(now())
+
+  @@unique([originText, destinationText])
+  @@map("route_distance_cache")
+}
+
+// ---------------------------------------------------------------------------
+// Zapytanie ofertowe (niewiążące)
+// ---------------------------------------------------------------------------
+
+enum InquiryType {
+  WYNAJEM
+  WYCIECZKA
+  LINIA_REGULARNA
+  INNE
+}
+
+enum InquiryStatus {
+  NOWE
+  DO_KONTAKTU
+  SKONTAKTOWANO
+  OCZEKUJE_NA_DECYZJE
+  ZAAKCEPTOWANE
+  ODRZUCONE
+}
+
+model Inquiry {
+  id                   String        @id @default(cuid())
+  type                 InquiryType
+  customerName         String
+  customerEmail        String
+  customerPhone        String
+  requestedDepartureAt DateTime
+  requestedReturnAt    DateTime?
+  passengerCount       Int
+  additionalInfo       String?
+  status               InquiryStatus @default(NOWE)
+
+  relatedLineId String?
+  relatedLine   RegularLine? @relation(fields: [relatedLineId], references: [id])
+  relatedTripId String?
+  relatedTrip   Trip?        @relation(fields: [relatedTripId], references: [id])
+
+  routePoints RoutePoint[]
+  priceQuotes PriceQuote[]
+  contactLogs InquiryContactLog[]
+  /// Ustawiane wyłącznie ręczną akcją administratora ("Utwórz zlecenie z zapytania").
+  /// Nigdy nie tworzone automatycznie i nigdy przez klienta.
+  booking     Booking?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("inquiries")
+}
+
+/// Chronologiczna, append-only historia kontaktu z klientem — widoczna w szczegółach
+/// zapytania. Wpisy nie są edytowane ani usuwane.
+enum ContactType {
+  PROBA_KONTAKTU
+  ROZMOWA_TELEFONICZNA
+  EMAIL
+  BRAK_ODPOWIEDZI
+  PROSBA_O_PONOWNY_KONTAKT
+  USTALENIE_CENY
+  AKCEPTACJA_KLIENTA
+  NOTATKA
+}
+
+model InquiryContactLog {
+  id          String      @id @default(cuid())
+  inquiryId   String
+  inquiry     Inquiry     @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  adminUserId String
+  adminUser   AdminUser   @relation(fields: [adminUserId], references: [id])
+  contactType ContactType
+  note        String?
+  createdAt   DateTime    @default(now())
+
+  @@index([inquiryId, createdAt])
+  @@map("inquiry_contact_logs")
+}
+
+enum RoutePointType {
+  BAZA_WYJAZD
+  ODBIOR
+  PRZYSTANEK
+  ZWROT
+  BAZA_POWROT
+}
+
+/// Punkt trasy dla zapytania LUB zlecenia — dokładnie jedno z inquiryId/bookingId
+/// powinno być ustawione. Ta reguła jest pilnowana w warstwie Server Actions
+/// (lib/actions/), nie na poziomie bazy danych.
+model RoutePoint {
+  id        String         @id @default(cuid())
+  inquiryId String?
+  inquiry   Inquiry?       @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  bookingId String?
+  booking   Booking?       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  sequence  Int
+  pointType RoutePointType
+  label     String
+  lat       Decimal?       @db.Decimal(9, 6)
+  lng       Decimal?       @db.Decimal(9, 6)
+
+  @@index([inquiryId, sequence])
+  @@index([bookingId, sequence])
+  @@map("route_points")
+}
+
+/// Niemutowalny snapshot wyceny — append-only. calculatedPrice nigdy nie jest
+/// nadpisywany; ręczna korekta admina tworzy NOWY rekord (manualPrice/manualDistanceKm)
+/// i oznacza poprzedni jako isCurrent = false. Cena obowiązująca = manualPrice ?? calculatedPrice
+/// najnowszego rekordu z isCurrent = true.
+model PriceQuote {
+  id               String     @id @default(cuid())
+  inquiryId        String
+  inquiry          Inquiry    @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  distanceKmAuto   Decimal?   @db.Decimal(10, 2)
+  ratePerKmAtQuote Decimal    @db.Decimal(10, 2)
+  baseFeeAtQuote   Decimal    @db.Decimal(10, 2)
+  calculatedPrice  Decimal    @db.Decimal(10, 2)
+  manualDistanceKm Decimal?   @db.Decimal(10, 2)
+  manualPrice      Decimal?   @db.Decimal(10, 2)
+  isCurrent        Boolean    @default(true)
+  createdAt        DateTime   @default(now())
+  createdById      String?
+  createdBy        AdminUser? @relation(fields: [createdById], references: [id])
+  note             String?
+
+  @@index([inquiryId, isCurrent])
+  @@map("price_quotes")
+}
+
+// ---------------------------------------------------------------------------
+// Zlecenie / przejazd (wyłącznie ręcznie, po akceptacji zapytania)
+// ---------------------------------------------------------------------------
+
+enum BookingStatus {
+  ZAPLANOWANE
+  W_TRAKCIE
+  ZAKONCZONE
+  ANULOWANE
+}
+
+model Booking {
+  id              String        @id @default(cuid())
+  sourceInquiryId String        @unique
+  sourceInquiry   Inquiry       @relation(fields: [sourceInquiryId], references: [id])
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  startAt         DateTime
+  endAt           DateTime
+  finalPrice      Decimal       @db.Decimal(10, 2)
+  status          BookingStatus @default(ZAPLANOWANE)
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  createdById     String?
+  createdBy       AdminUser?    @relation(fields: [createdById], references: [id])
+
+  routePoints RoutePoint[]
+  drivers     BookingDriver[]
+  buses       BookingBus[]
+
+  @@index([startAt, endAt])
+  @@index([status])
+  @@map("bookings")
+}
+
+enum BookingDriverRole {
+  GLOWNY
+  POMOCNICZY
+}
+
+/// Wielu kierowców na jedno zlecenie.
+model BookingDriver {
+  id         String             @id @default(cuid())
+  bookingId  String
+  booking    Booking            @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  driverId   String
+  driver     Driver             @relation(fields: [driverId], references: [id])
+  roleOnTrip BookingDriverRole?
+
+  @@unique([bookingId, driverId])
+  @@map("booking_drivers")
+}
+
+/// Wiele autobusów na jedno zlecenie.
+model BookingBus {
+  id        String  @id @default(cuid())
+  bookingId String
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  busId     String
+  bus       Bus     @relation(fields: [busId], references: [id])
+
+  @@unique([bookingId, busId])
+  @@map("booking_buses")
+}

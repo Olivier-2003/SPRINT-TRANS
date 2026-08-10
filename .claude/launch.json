@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sprint-trans-dev",
+      "runtimeExecutable": "C:\\Users\\olivi\\Desktop\\Strona\\scripts\\dev.cmd",
+      "runtimeArgs": [],
+      "port": 3000
+    }
+  ]
+}
