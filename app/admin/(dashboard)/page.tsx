@@ -1,16 +1,27 @@
 import { DashboardStats } from "@/components/admin/DashboardStats";
+import { getDashboardStats } from "@/lib/data/dashboard";
 
-export default function AdminDashboardPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AdminDashboardPage() {
+  const stats = await getDashboardStats();
+
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
         <p className="text-sm text-muted-foreground">
-          Statusy i statystyki zapytań/zleceń pojawią się tutaj od Etapu 5/6.
+          Skrót statusu zapytań i nadchodzących zleceń.
         </p>
       </div>
 
-      <DashboardStats />
+      <DashboardStats
+        stats={[
+          { label: "Nowe zapytania", value: stats.newInquiries },
+          { label: "Wycenione / oczekujące na klienta", value: stats.awaitingDecision },
+          { label: "Nadchodzące zlecenia", value: stats.upcomingBookings },
+        ]}
+      />
     </div>
   );
 }

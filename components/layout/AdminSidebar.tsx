@@ -3,9 +3,9 @@ import { LogoutButton } from "@/components/forms/LogoutButton";
 
 const NAV_SECTIONS = [
   { label: "Dashboard", href: "/admin", enabled: true },
-  { label: "Kalendarz", enabled: false },
-  { label: "Zapytania", enabled: false },
-  { label: "Zlecenia", enabled: false },
+  { label: "Kalendarz", href: "/admin/kalendarz", enabled: true },
+  { label: "Zapytania", href: "/admin/zapytania", enabled: true },
+  { label: "Zlecenia", href: "/admin/zlecenia", enabled: true },
   { label: "Kierowcy", href: "/admin/kierowcy", enabled: true },
   { label: "Autobusy", href: "/admin/autobusy", enabled: true },
   { label: "Linie regularne", href: "/admin/linie", enabled: true },

@@ -257,13 +257,18 @@ enum InquiryType {
   INNE
 }
 
+/// Workflow statusów zapytania. Kolejność logiczna (nieegzekwowana na poziomie
+/// bazy): NOWE -> DO_KONTAKTU -> WYCENIONE -> OCZEKUJE_NA_KLIENTA -> ZAAKCEPTOWANE
+/// | ODRZUCONE | ANULOWANE. Lista i etykiety PL scentralizowane w lib/inquiry-status.ts —
+/// dodanie nowego statusu w przyszłości = nowa wartość enuma + wpis w tamtej mapie.
 enum InquiryStatus {
   NOWE
   DO_KONTAKTU
-  SKONTAKTOWANO
-  OCZEKUJE_NA_DECYZJE
+  WYCENIONE
+  OCZEKUJE_NA_KLIENTA
   ZAAKCEPTOWANE
   ODRZUCONE
+  ANULOWANE
 }
 
 model Inquiry {
@@ -394,6 +399,17 @@ model PriceQuote {
   waitingCost   Decimal @default(0) @db.Decimal(10, 2)
   overnightCost Decimal @default(0) @db.Decimal(10, 2)
 
+  // --- Ręczna korekta administratora (Etap 5) — puste w automatycznej wycenie
+  //     klienta. Każda korekta to NOWY rekord PriceQuote (isCurrent=true na nowym,
+  //     false na poprzednim) — powyższe pola automatyczne tego rekordu są wtedy
+  //     kopiowane z poprzedniego "current" (nigdy nie przeliczane wstecz), a poniższe
+  //     manualne pola niosą skorygowane przez administratora wartości. Efektywna
+  //     wartość każdego składnika to zawsze "manualX ?? automatyczne pole".
+  manualDistanceKm     Decimal? @db.Decimal(10, 2)
+  manualTripDays       Int?
+  manualOvernightStays Int?
+  manualDriverCount    Int?
+  manualWaitingHours   Decimal? @db.Decimal(6, 2)
   /// Dodatkowe koszty ręczne (np. opłaty drogowe, parking) — 0/puste w
   /// automatycznej wycenie klienta, uzupełniane przez administratora.
   manualExtraCosts     Decimal? @db.Decimal(10, 2)
@@ -401,16 +417,15 @@ model PriceQuote {
 
   /// Suma automatyczna wszystkich składowych powyżej (baseFee + distanceCost +
   /// waitingCost + overnightCost). Nigdy nie nadpisywana.
-  calculatedPrice  Decimal    @db.Decimal(10, 2)
-  manualDistanceKm Decimal?   @db.Decimal(10, 2)
+  calculatedPrice Decimal    @db.Decimal(10, 2)
   /// Ostateczna cena po ręcznej korekcie administratora — nadrzędna nad
   /// calculatedPrice, jeśli ustawiona.
-  manualPrice      Decimal?   @db.Decimal(10, 2)
-  isCurrent        Boolean    @default(true)
-  createdAt        DateTime   @default(now())
-  createdById      String?
-  createdBy        AdminUser? @relation(fields: [createdById], references: [id])
-  note             String?
+  manualPrice     Decimal?   @db.Decimal(10, 2)
+  isCurrent       Boolean    @default(true)
+  createdAt       DateTime   @default(now())
+  createdById     String?
+  createdBy       AdminUser? @relation(fields: [createdById], references: [id])
+  note            String?
 
   @@index([inquiryId, isCurrent])
   @@map("price_quotes")
