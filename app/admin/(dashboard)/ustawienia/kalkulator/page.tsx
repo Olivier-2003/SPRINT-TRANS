@@ -11,9 +11,10 @@ export default async function CalculatorSettingsPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Ustawienia kalkulatora</h1>
         <p className="text-sm text-muted-foreground">
-          Stawka za kilometr i opłata bazowa używane przez kalkulator orientacyjnej ceny na
-          stronie publicznej (od Etapu 4). Zmiana wpływa wyłącznie na przyszłe wyceny —
-          historyczne wyceny (zapisane w zapytaniach) pozostają niezmienione.
+          Stawki używane przez kalkulator orientacyjnej ceny na stronie publicznej: kilometry,
+          opłata bazowa, postój kierowcy i noclegi przy wyjazdach wielodniowych. Zmiana wpływa
+          wyłącznie na przyszłe wyceny — historyczne wyceny (zapisane w zapytaniach) pozostają
+          niezmienione.
         </p>
       </div>
       <Card className="max-w-md">
@@ -28,6 +29,9 @@ export default async function CalculatorSettingsPage() {
                 ? {
                     ratePerKm: String(settings.ratePerKm),
                     baseFee: String(settings.baseFee),
+                    hourlyWaitingRate: String(settings.hourlyWaitingRate),
+                    driverOvernightRate: String(settings.driverOvernightRate),
+                    averageSpeedKmh: String(settings.averageSpeedKmh),
                   }
                 : undefined
             }

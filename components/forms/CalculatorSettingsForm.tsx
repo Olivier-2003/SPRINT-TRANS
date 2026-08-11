@@ -62,6 +62,45 @@ export function CalculatorSettingsForm({
         </div>
       </div>
 
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="hourlyWaitingRate">Stawka za godzinę postoju (PLN)</Label>
+          <Input
+            id="hourlyWaitingRate"
+            type="number"
+            step="0.01"
+            {...register("hourlyWaitingRate")}
+          />
+          {errors.hourlyWaitingRate && (
+            <p className="text-sm text-destructive">{errors.hourlyWaitingRate.message}</p>
+          )}
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="driverOvernightRate">Koszt noclegu kierowcy za noc (PLN)</Label>
+          <Input
+            id="driverOvernightRate"
+            type="number"
+            step="0.01"
+            {...register("driverOvernightRate")}
+          />
+          {errors.driverOvernightRate && (
+            <p className="text-sm text-destructive">{errors.driverOvernightRate.message}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2 sm:w-1/2 sm:pr-2">
+        <Label htmlFor="averageSpeedKmh">Założona średnia prędkość (km/h)</Label>
+        <Input id="averageSpeedKmh" type="number" step="1" {...register("averageSpeedKmh")} />
+        {errors.averageSpeedKmh && (
+          <p className="text-sm text-destructive">{errors.averageSpeedKmh.message}</p>
+        )}
+        <p className="text-xs text-muted-foreground">
+          Używana wyłącznie do orientacyjnego oszacowania czasu jazdy (i pośrednio czasu postoju)
+          w automatycznej wycenie.
+        </p>
+      </div>
+
       {serverError && <p className="text-sm text-destructive">{serverError}</p>}
       {savedAt && <p className="text-sm text-primary">Zapisano nowe stawki.</p>}
 

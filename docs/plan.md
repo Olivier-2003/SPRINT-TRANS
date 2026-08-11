@@ -175,8 +175,16 @@ zbudowaniu każdego większego widoku dokumentowane jest, który plik odpowiada 
 
 **`Trip`** / **`TripPhoto`** — bez zmian (wycieczki/oferty specjalne).
 
-**`CalculatorSettings`** (edytowalne z panelu — jeden aktywny rekord + historia zmian)
-`id, ratePerKm (decimal), baseFee (decimal), updatedAt, updatedBy → AdminUser`
+**`CalculatorSettings`** (edytowalne z panelu — jeden aktywny rekord)
+`id, ratePerKm (decimal), baseFee (decimal), hourlyWaitingRate (decimal) — stawka za godzinę postoju,
+driverOvernightRate (decimal) — koszt noclegu kierowcy za noc, averageSpeedKmh (decimal, domyślnie 55) —
+założona średnia prędkość, wyłącznie do orientacyjnego oszacowania czasu jazdy/postoju, updatedAt,
+updatedBy → AdminUser`
+
+> **Rozszerzenie Etapu 4:** kalkulator nie wycenia już wyłącznie na podstawie kilometrów — uwzględnia pełny
+> czas i charakter realizacji zlecenia (patrz `PriceQuote` niżej). Dokładne reguły naliczania postoju,
+> noclegów i dodatkowych kierowców będą doprecyzowywane przez administratora per zapytanie (Etap 5);
+> powyższe stawki to pierwsze, orientacyjne przybliżenie.
 
 **`RouteDistanceCache`** (cache odpowiedzi z zewnętrznego API tras dla par punktów)
 `id, originText, destinationText, distanceKm, computedAt`
@@ -229,19 +237,31 @@ lat, lng (nullable)               → wynik geokodowania, opcjonalny
 ```
 id
 inquiryId → Inquiry
-distanceKmAuto (nullable)         → wynik z API tras w momencie liczenia
-ratePerKmAtQuote (decimal)        → skopiowana wartość z CalculatorSettings w tym momencie
-baseFeeAtQuote (decimal)          → jw.
-calculatedPrice (decimal)         → wynik automatyczny: distanceKmAuto * rate + baseFee
-manualDistanceKm (nullable)       → ręczna korekta km przez admina
-manualPrice (nullable)            → ręczna korekta ceny końcowej przez admina
+
+// Wejście automatycznej kalkulacji (snapshot stawek/parametrów użytych w tym momencie)
+distanceKmAuto (nullable), ratePerKmAtQuote, baseFeeAtQuote,
+hourlyWaitingRateAtQuote, driverOvernightRateAtQuote, averageSpeedKmhAtQuote
+tripDays (int)                    → liczba dni wyjazdu (kalendarzowo, z dat wyjazd/powrót)
+overnightStays (int)              → tripDays - 1, jeśli > 0
+driverCount (int, domyślnie 1)    → liczba kierowców uwzględniona w koszcie noclegów
+estimatedWaitingHours (decimal)   → szacowany postój = czas wyjazd–powrót minus szacowany czas jazdy
+                                     (dystans / averageSpeedKmhAtQuote)
+
+// Wyliczone składowe (przejrzysty podgląd w panelu)
+distanceCost, waitingCost, overnightCost (decimal)
+
+// Ręczna korekta administratora (Etap 5) — puste w automatycznej wycenie klienta
+manualExtraCosts (nullable), manualExtraCostsNote (nullable)
+manualDistanceKm (nullable), manualPrice (nullable) → nadrzędne nad calculatedPrice, jeśli ustawione
+
+calculatedPrice (decimal)         → suma automatyczna: baseFee + distanceCost + waitingCost + overnightCost
 isCurrent (bool)                  → oznacza najnowszą/obowiązującą wycenę dla danego Inquiry
 createdAt, createdBy (nullable) → AdminUser   → null = wycena automatyczna z formularza klienta
 note (text, nullable)
 ```
 Zasada: `calculatedPrice` nigdy nie jest nadpisywany. Każda ręczna korekta admina **tworzy nowy rekord**
-`PriceQuote` (z `manualPrice`/`manualDistanceKm` wypełnionym) i oznacza poprzedni jako nieaktualny
-(`isCurrent = false`). Cena "obowiązująca" to zawsze najnowszy rekord: `manualPrice ?? calculatedPrice`.
+`PriceQuote` i oznacza poprzedni jako nieaktualny (`isCurrent = false`). Cena "obowiązująca" to zawsze
+najnowszy rekord: `manualPrice ?? calculatedPrice`.
 
 ---
 

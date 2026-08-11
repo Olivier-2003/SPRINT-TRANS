@@ -7,7 +7,7 @@ const NAV_ITEMS = [
   { label: "Flota", href: "/flota" },
   { label: "Rozkład jazdy", href: "/rozklad-jazdy" },
   { label: "Wycieczki", href: "/wycieczki" },
-  { label: "Kalkulator", href: null },
+  { label: "Kalkulator", href: "/kalkulator" },
   { label: "Kontakt", href: "/kontakt" },
 ];
 

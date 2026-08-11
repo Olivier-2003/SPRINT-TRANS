@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { getPublicLines } from "@/lib/data/lines";
 import { getPublicTrips } from "@/lib/data/trips";
 import { getPublicBuses } from "@/lib/data/buses";
@@ -36,16 +35,14 @@ export default async function OfferPage() {
           </Card>
         </Link>
 
-        <Link href="/flota">
+        <Link href="/kalkulator">
           <Card className="h-full transition-colors hover:border-primary">
             <CardHeader>
               <CardTitle className="text-base">Wynajem autobusów</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-1 text-sm text-muted-foreground">
-              <span>{buses.length} autobusów dostępnych do wynajmu.</span>
-              <Badge variant="secondary" className="w-fit">
-                Kalkulator ceny i zapytanie — od Etapu 4
-              </Badge>
+            <CardContent className="text-sm text-muted-foreground">
+              {buses.length} autobusów dostępnych do wynajmu. Sprawdź orientacyjną cenę w
+              kalkulatorze.
             </CardContent>
           </Card>
         </Link>

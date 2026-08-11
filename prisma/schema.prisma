@@ -215,12 +215,21 @@ model TripPhoto {
 /// przechowują własny snapshot stawek użytych w danym momencie i NIE są przeliczane
 /// wstecz przy zmianie tej tabeli.
 model CalculatorSettings {
-  id          String     @id @default(cuid())
-  ratePerKm   Decimal    @db.Decimal(10, 2)
-  baseFee     Decimal    @db.Decimal(10, 2)
-  updatedAt   DateTime   @updatedAt
-  updatedById String?
-  updatedBy   AdminUser? @relation(fields: [updatedById], references: [id])
+  id                  String     @id @default(cuid())
+  ratePerKm           Decimal    @db.Decimal(10, 2)
+  baseFee             Decimal    @db.Decimal(10, 2)
+  /// Stawka za godzinę postoju/oczekiwania kierowcy na miejscu.
+  hourlyWaitingRate   Decimal    @default(0) @db.Decimal(10, 2)
+  /// Koszt noclegu jednego kierowcy za jedną noc (wyjazdy wielodniowe).
+  driverOvernightRate Decimal    @default(0) @db.Decimal(10, 2)
+  /// Założona średnia prędkość przejazdu (km/h) — używana wyłącznie do
+  /// orientacyjnego oszacowania czasu jazdy (i pośrednio czasu postoju)
+  /// w automatycznej wycenie klienta. Dokładne reguły naliczania postoju
+  /// administrator będzie mógł doprecyzować ręcznie per zapytanie.
+  averageSpeedKmh     Decimal    @default(55) @db.Decimal(6, 2)
+  updatedAt           DateTime   @updatedAt
+  updatedById         String?
+  updatedBy           AdminUser? @relation(fields: [updatedById], references: [id])
 
   @@map("calculator_settings")
 }
@@ -348,15 +357,54 @@ model RoutePoint {
 /// nadpisywany; ręczna korekta admina tworzy NOWY rekord (manualPrice/manualDistanceKm)
 /// i oznacza poprzedni jako isCurrent = false. Cena obowiązująca = manualPrice ?? calculatedPrice
 /// najnowszego rekordu z isCurrent = true.
+/// Niemutowalny snapshot wyceny (append-only, jak reszta wycen w systemie).
+/// Uwzględnia nie tylko dystans, ale pełny czas i charakter realizacji zlecenia:
+/// postój kierowcy, noclegi przy wyjazdach wielodniowych i liczbę kierowców.
+/// Wszystkie stawki/parametry użyte do automatycznej kalkulacji są tu
+/// skopiowane w momencie wyceny — zmiana CalculatorSettings później nie
+/// wpływa na już złożone zapytania. Pola manualne (manualPrice, manualExtraCosts
+/// itd.) pozwolą administratorowi (Etap 5) skorygować wycenę bez zmiany
+/// automatycznie wyliczonych wartości.
 model PriceQuote {
-  id               String     @id @default(cuid())
-  inquiryId        String
-  inquiry          Inquiry    @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
-  distanceKmAuto   Decimal?   @db.Decimal(10, 2)
-  ratePerKmAtQuote Decimal    @db.Decimal(10, 2)
-  baseFeeAtQuote   Decimal    @db.Decimal(10, 2)
+  id        String  @id @default(cuid())
+  inquiryId String
+  inquiry   Inquiry @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+
+  // --- Wejście automatycznej kalkulacji (snapshot stawek/parametrów) ---
+  distanceKmAuto             Decimal? @db.Decimal(10, 2)
+  ratePerKmAtQuote           Decimal  @db.Decimal(10, 2)
+  baseFeeAtQuote             Decimal  @db.Decimal(10, 2)
+  hourlyWaitingRateAtQuote   Decimal  @default(0) @db.Decimal(10, 2)
+  driverOvernightRateAtQuote Decimal  @default(0) @db.Decimal(10, 2)
+  averageSpeedKmhAtQuote     Decimal  @default(55) @db.Decimal(6, 2)
+  /// Liczba dni wyjazdu (kalendarzowo, na podstawie dat wyjazdu/powrotu).
+  tripDays                   Int      @default(1)
+  /// Liczba noclegów kierowcy (tripDays - 1, jeśli > 0).
+  overnightStays             Int      @default(0)
+  /// Liczba kierowców uwzględniona w koszcie noclegów — domyślnie 1,
+  /// administrator może zwiększyć przy dłuższych trasach.
+  driverCount                Int      @default(1)
+  /// Szacowany czas postoju/oczekiwania kierowcy na miejscu (w godzinach) —
+  /// orientacyjny, wyliczony z różnicy czasu wyjazd/powrót i szacowanego
+  /// czasu jazdy (dystans / averageSpeedKmhAtQuote).
+  estimatedWaitingHours      Decimal  @default(0) @db.Decimal(6, 2)
+
+  // --- Wyliczone składowe ceny (do przejrzystego podglądu w panelu) ---
+  distanceCost  Decimal @default(0) @db.Decimal(10, 2)
+  waitingCost   Decimal @default(0) @db.Decimal(10, 2)
+  overnightCost Decimal @default(0) @db.Decimal(10, 2)
+
+  /// Dodatkowe koszty ręczne (np. opłaty drogowe, parking) — 0/puste w
+  /// automatycznej wycenie klienta, uzupełniane przez administratora.
+  manualExtraCosts     Decimal? @db.Decimal(10, 2)
+  manualExtraCostsNote String?
+
+  /// Suma automatyczna wszystkich składowych powyżej (baseFee + distanceCost +
+  /// waitingCost + overnightCost). Nigdy nie nadpisywana.
   calculatedPrice  Decimal    @db.Decimal(10, 2)
   manualDistanceKm Decimal?   @db.Decimal(10, 2)
+  /// Ostateczna cena po ręcznej korekcie administratora — nadrzędna nad
+  /// calculatedPrice, jeśli ustawiona.
   manualPrice      Decimal?   @db.Decimal(10, 2)
   isCurrent        Boolean    @default(true)
   createdAt        DateTime   @default(now())

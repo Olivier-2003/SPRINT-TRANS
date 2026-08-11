@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export function HeroSection() {
@@ -11,11 +12,11 @@ export function HeroSection() {
         zdjęcia firmy zostaną uzupełnione przez SPRINT-TRANS.
       </p>
       <div className="flex items-center gap-3">
-        <Button disabled title="Formularz zapytania powstanie w Etapie 4">
+        <Button render={<Link href="/kalkulator" />} nativeButton={false}>
           Wyślij zapytanie o przejazd
         </Button>
         <span className="text-sm text-muted-foreground">
-          (aktywne od Etapu 4 — kalkulator i formularz zapytania)
+          Bezpłatna, niewiążąca wycena — bez płatności online.
         </span>
       </div>
     </section>

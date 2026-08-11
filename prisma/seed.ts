@@ -23,11 +23,18 @@ async function main() {
 
   await db.calculatorSettings.upsert({
     where: { id: "seed-calculator-settings" },
-    update: {},
+    update: {
+      hourlyWaitingRate: 40,
+      driverOvernightRate: 150,
+      averageSpeedKmh: 55,
+    },
     create: {
       id: "seed-calculator-settings",
       ratePerKm: 3.5,
       baseFee: 150,
+      hourlyWaitingRate: 40,
+      driverOvernightRate: 150,
+      averageSpeedKmh: 55,
       updatedById: admin.id,
     },
   });

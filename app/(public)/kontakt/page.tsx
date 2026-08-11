@@ -36,14 +36,10 @@ export default function ContactPage() {
 
       <div className="rounded-md border p-4">
         <p className="text-sm text-muted-foreground">
-          Formularz zapytania o wynajem autobusu i kalkulator orientacyjnej ceny znajdziesz na
-          stronie{" "}
-          <Link href="/flota" className="underline underline-offset-2">
-            Flota
-          </Link>{" "}
-          (aktywne od Etapu 4).
+          Chcesz wynająć autobus? Skorzystaj z kalkulatora orientacyjnej ceny i wyślij zapytanie —
+          bez żadnej płatności online.
         </p>
-        <Button className="mt-3" disabled title="Aktywne od Etapu 4">
+        <Button render={<Link href="/kalkulator" />} nativeButton={false} className="mt-3">
           Wyślij zapytanie o przejazd
         </Button>
       </div>

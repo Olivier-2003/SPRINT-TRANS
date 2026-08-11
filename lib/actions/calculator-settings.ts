@@ -26,6 +26,9 @@ export async function updateCalculatorSettings(
   const values = {
     ratePerKm: Number(parsed.data.ratePerKm),
     baseFee: Number(parsed.data.baseFee),
+    hourlyWaitingRate: Number(parsed.data.hourlyWaitingRate),
+    driverOvernightRate: Number(parsed.data.driverOvernightRate),
+    averageSpeedKmh: Number(parsed.data.averageSpeedKmh),
     updatedById: session?.user?.id,
   };
 

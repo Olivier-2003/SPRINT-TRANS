@@ -16,8 +16,8 @@ export function OfferHighlights({ lineCount, busCount, tripCount }: OfferHighlig
     },
     {
       title: "Wynajem autobusów",
-      description: `${busCount} autobusów we flocie. Kalkulator i formularz zapytania — od Etapu 4.`,
-      href: "/flota",
+      description: `${busCount} autobusów we flocie. Sprawdź orientacyjną cenę w kalkulatorze.`,
+      href: "/kalkulator",
     },
     {
       title: "Wycieczki",

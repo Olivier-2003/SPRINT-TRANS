@@ -7,12 +7,14 @@ linie regularne, wycieczki), oparte o wspólną bazę danych.
 Pełny plan projektu (stack, architektura, struktura bazy, lista ekranów, przepływ danych, etapy) znajduje się
 w `docs/plan.md`.
 
-**Status: Etap 3 — strona publiczna (treści i struktura, bez finalnego designu).** Poza panelem z Etapów 1–2
-działa publiczna prezentacja danych: strona główna, o firmie, oferta, flota (+ szczegóły), rozkład jazdy
-(+ wyszukiwanie i szczegóły), wycieczki (+ szczegóły), kontakt, regulamin, polityka prywatności, 404 — w całości
-zasilana danymi z panelu (dynamiczne renderowanie, bez cache'owania strony przy zmianie danych). Warstwa
-wizualna jest celowo minimalna (komponenty shadcn/ui bez customizacji) — ostateczny design zaprojektuje
-klient. Kalkulator ceny i formularz zapytania — Etap 4.
+**Status: Etap 4 — kalkulator ceny i formularz zapytania.** Poza treścią publiczną z Etapu 3 działa
+`/kalkulator`: wielopunktowa trasa, liczenie dystansu i orientacyjnej ceny (kilometry + opłata bazowa +
+szacowany postój kierowcy + noclegi przy wyjazdach wielodniowych), a po akceptacji wyceny — wysłanie
+niewiążącego zapytania (zapisywane jako `Inquiry` + `RoutePoint[]` + niemutowalny `PriceQuote`, z e-mailem
+potwierdzającym). Brak klucza API tras/e-mail nie blokuje działania strony — kalkulator pokazuje czytelny
+komunikat, a zapytanie i tak można by zapisać (patrz „Zmienne środowiskowe”). Warstwa wizualna nadal celowo
+minimalna — ostateczny design zaprojektuje klient. Panel administracyjny do przeglądu/akceptacji zapytań —
+Etap 5.
 
 ## Stack
 
@@ -51,7 +53,16 @@ Skopiuj `.env.example` do `.env` i uzupełnij:
 
 > **Uwaga (lokalny dev):** `npx prisma dev` po dłuższej przerwie bezczynności potrafi chwilowo przestać
 > odpowiadać (błąd „Connection terminated unexpectedly” w konsoli serwera). Wystarczy odświeżyć stronę —
-> jeśli to nie pomoże, uruchom ponownie `npx prisma dev` w osobnym terminalu.
+> jeśli to nie pomoże, uruchom ponownie `npx prisma dev stop <nazwa>` i `npx prisma dev start <nazwa>`
+> w osobnym terminalu (nazwa serwera z `npx prisma dev ls`). Jeśli serwer padnie od razu po starcie
+> (`status: not_running` mimo `prisma dev start`), spróbuj uruchomić `npx prisma dev` **bez** flagi `-d`
+> (bez odłączania od terminala) — w tym środowisku tryb odłączony okazał się mniej stabilny.
+>
+> **Ważne:** nie nazywaj bazy roboczej `template1` w connection stringu `npx prisma dev`. To specjalna,
+> domyślna baza-szablon Postgresa — każda kolejna `CREATE DATABASE` (w tym baza cieni tworzona
+> automatycznie przez `prisma migrate dev`) klonuje jej zawartość, co prowadzi do kolizji
+> (`type "..." already exists`) przy każdej nowej migracji. Używaj zwykłej nazwy, np. `sprint_trans`
+> (tak jak w `.env.example`).
 
 ## Struktura katalogów
 
@@ -64,6 +75,7 @@ app/
     flota/, flota/[busId]/                                             — flota (lista + szczegóły)
     rozklad-jazdy/, rozklad-jazdy/[lineId]/                            — linie (lista + szczegóły)
     wycieczki/, wycieczki/[tripId]/                                    — wycieczki (lista + szczegóły)
+    kalkulator/                                                          — kalkulator ceny + formularz zapytania
   admin/
     login/page.tsx           — logowanie (bez sidebaru panelu)
     (dashboard)/              — wszystko za logowaniem: layout z sidebarem + strony panelu
@@ -76,7 +88,7 @@ components/
   layout/      — Navbar, Footer, AdminSidebar
   sections/    — sekcje strony głównej (Hero, oferta, ...)
   forms/       — formularze (LoginForm, DriverForm, BusForm, LineForm, TripForm,
-                  CalculatorSettingsForm, ConfirmDeleteForm) — tylko UI, logika w lib/
+                  CalculatorSettingsForm, ConfirmDeleteForm, InquiryForm) — tylko UI, logika w lib/
   admin/       — komponenty widoków panelu (tabele list, DashboardStats, AdminListHeader)
   public/      — komponenty widoków publicznych (PhotoGallery, FleetGrid, BusDetails,
                   LineSearchList, LineTimetable, TripsGrid, TripDetails)
@@ -85,13 +97,18 @@ lib/
   db.ts               — singleton klienta Prisma
   auth.ts              — pełna konfiguracja Auth.js (Node.js runtime — DB, bcrypt)
   auth.config.ts        — konfiguracja bezpieczna dla Edge (używana w proxy.ts/middleware)
-  actions/               — Server Actions (jedyne miejsce zapisu do bazy) — drivers, buses, lines,
-                            trips, calculator-settings, auth
-  data/                   — funkcje odczytu z bazy (getDrivers, getBuses, getPublicBuses, ...)
-                            używane w page.tsx; funkcje "public" filtrują tylko aktywne rekordy
-  validation/              — schematy Zod (źródło prawdy o kształcie danych każdej encji)
-  prisma-errors.ts          — rozpoznawanie błędów Prisma (unikalność, klucz obcy)
-  generated/prisma/          — wygenerowany klient Prisma (nie commitować, patrz .gitignore)
+  routing.ts             — geokodowanie + dystans trasy (OpenRouteService), cache per odcinek
+  pricing.ts               — pełny model kosztowy (km, postój, noclegi) — czysta funkcja, testowalna
+                              bez API tras
+  email.ts                  — e-maile po złożeniu zapytania (Resend), best-effort
+  inquiry-messages.ts         — teksty współdzielone między e-mailem a UI (bez zależności server-only)
+  actions/                     — Server Actions (jedyne miejsce zapisu do bazy) — drivers, buses, lines,
+                                  trips, calculator-settings, auth, inquiry
+  data/                         — funkcje odczytu z bazy (getDrivers, getBuses, getPublicBuses, ...)
+                                  używane w page.tsx; funkcje "public" filtrują tylko aktywne rekordy
+  validation/                    — schematy Zod (źródło prawdy o kształcie danych każdej encji)
+  prisma-errors.ts                — rozpoznawanie błędów Prisma (unikalność, klucz obcy)
+  generated/prisma/                — wygenerowany klient Prisma (nie commitować, patrz .gitignore)
 
 prisma/
   schema.prisma   — pełny schemat bazy danych
@@ -113,6 +130,7 @@ docs/plan.md  — pełny plan projektu zaakceptowany przed implementacją
 | Flota (lista / szczegóły) | `app/(public)/flota/**` | `components/public/fleet/FleetGrid.tsx`, `components/public/fleet/BusDetails.tsx`, `components/public/PhotoGallery.tsx` |
 | Rozkład jazdy (lista+szukajka / szczegóły) | `app/(public)/rozklad-jazdy/**` | `components/public/lines/LineSearchList.tsx`, `components/public/lines/LineTimetable.tsx` |
 | Wycieczki (lista / szczegóły) | `app/(public)/wycieczki/**` | `components/public/trips/TripsGrid.tsx`, `components/public/trips/TripDetails.tsx`, `components/public/PhotoGallery.tsx` |
+| Kalkulator + formularz zapytania | `app/(public)/kalkulator/page.tsx` | `components/forms/InquiryForm.tsx` |
 | Kontakt | `app/(public)/kontakt/page.tsx` | bezpośrednio w pliku strony |
 | Regulamin / Polityka prywatności | `app/(public)/regulamin/`, `app/(public)/polityka-prywatnosci/` | bezpośrednio w plikach stron |
 | Strona 404 | `app/not-found.tsx` | bezpośrednio w pliku |
