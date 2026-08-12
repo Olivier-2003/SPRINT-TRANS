@@ -31,6 +31,9 @@ model AdminUser {
   priceQuotesCreated        PriceQuote[]
   bookingsCreated           Booking[]
   contactLogs               InquiryContactLog[]
+  driverAvailabilityCreated DriverAvailability[]
+  busAvailabilityCreated    BusAvailability[]
+  assignmentHistoryChanges  BookingAssignmentHistory[]
 
   @@map("admin_users")
 }
@@ -53,26 +56,62 @@ model Driver {
   licenseCategories String
   employmentStatus  DriverEmploymentStatus @default(ACTIVE)
   notes             String?
+  /// Minimalny wymagany odpoczynek (w godzinach) pomiędzy końcem jednego zlecenia
+  /// a początkiem kolejnego dla tego kierowcy. Domyślna wartość odpowiada typowej
+  /// praktyce branżowej; edytowalna per kierowca. Używana przez silnik dostępności
+  /// (lib/availability-engine.ts) do wykrywania statusu "problem z odpoczynkiem" —
+  /// nie jest to twarda blokada, a ostrzeżenie do ręcznej weryfikacji administratora.
+  restingHoursRequired Decimal  @default(11) @db.Decimal(4, 1)
+  /// Orientacyjny maksymalny dzienny czas pracy (w godzinach) — informacyjnie, pod
+  /// przyszły automatyczny algorytm przydziału (Etap 9). Nieegzekwowane twardo teraz.
+  maxDailyWorkHours    Decimal? @db.Decimal(4, 1)
+  /// Rodzaje zleceń, do których kierowca NIE powinien być przydzielany (np. brak
+  /// uprawnień/preferencji). Generuje ostrzeżenie przy przypisaniu, nie blokuje.
+  restrictedWorkTypes  InquiryType[] @default([])
+  /// Rodzaje zleceń preferowane przez kierowcę — wyłącznie do sortowania rekomendacji
+  /// w funkcji "Pokaż dostępnych kierowców", nie wpływa na status dostępności.
+  preferredWorkTypes   InquiryType[] @default([])
+  /// Docelowy miesięczny wymiar czasu pracy (godziny) — podstawa bilansu w ewidencji
+  /// czasu pracy (lib/driver-timesheet.ts). Jeśli puste, używany jest wymiar tygodniowy
+  /// przeliczony na miesiąc; jeśli oba puste, bilans/nadgodziny nie są wyliczane.
+  monthlyWorkHoursNorm Decimal? @db.Decimal(6, 1)
+  /// Docelowy tygodniowy wymiar czasu pracy (godziny) — używany do wyliczenia wymiaru
+  /// miesięcznego, gdy monthlyWorkHoursNorm nie jest ustawione.
+  weeklyWorkHoursNorm  Decimal? @db.Decimal(5, 1)
   createdAt         DateTime               @default(now())
 
   availability       DriverAvailability[]
   bookingAssignments BookingDriver[]
+  lineAssignments    DriverLineAssignment[]
 
   @@map("drivers")
 }
 
-/// Placeholder pod przyszły algorytm automatycznego przydziału: jawna niedostępność
-/// kierowcy (np. urlop). Nieużywana przez żadną logikę biznesową na tym etapie.
-model DriverAvailability {
-  id            String    @id @default(cuid())
-  driverId      String
-  driver        Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
-  date          DateTime  @db.Date
-  availableFrom DateTime?
-  availableTo   DateTime?
-  note          String?
+enum DriverAvailabilityType {
+  URLOP
+  CHOROBOWE
+  SZKOLENIE
+  NIEDOSTEPNY
+  DOSTEPNY_CZESCIOWO
+}
 
-  @@index([driverId, date])
+/// Ręcznie wprowadzana niedostępność (lub częściowa dostępność) kierowcy w danym
+/// przedziale dat i godzin — obok zajętości wynikającej ze zleceń (Booking), to
+/// drugie źródło danych brane pod uwagę przez silnik dostępności. Podstawa pod
+/// przyszły automatyczny algorytm przydziału (Etap 9).
+model DriverAvailability {
+  id          String                 @id @default(cuid())
+  driverId    String
+  driver      Driver                 @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  type        DriverAvailabilityType
+  startAt     DateTime
+  endAt       DateTime
+  note        String?
+  createdAt   DateTime               @default(now())
+  createdById String?
+  createdBy   AdminUser?             @relation(fields: [createdById], references: [id])
+
+  @@index([driverId, startAt, endAt])
   @@map("driver_availability")
 }
 
@@ -115,17 +154,31 @@ model BusPhoto {
   @@map("bus_photos")
 }
 
-/// Placeholder pod przyszły algorytm — jawna niedostępność autobusu (np. przegląd).
-model BusAvailability {
-  id            String    @id @default(cuid())
-  busId         String
-  bus           Bus       @relation(fields: [busId], references: [id], onDelete: Cascade)
-  date          DateTime  @db.Date
-  availableFrom DateTime?
-  availableTo   DateTime?
-  note          String?
+enum BusAvailabilityType {
+  DOSTEPNY
+  SERWIS
+  PRZEGLAD
+  AWARIA
+  NIEDOSTEPNY
+}
 
-  @@index([busId, date])
+/// Ręcznie wprowadzana niedostępność (lub jawna dostępność) autobusu w danym
+/// przedziale dat i godzin — obok zajętości wynikającej ze zleceń (Booking), to
+/// drugie źródło danych brane pod uwagę przez silnik dostępności. Podstawa pod
+/// przyszły automatyczny algorytm przydziału (Etap 9).
+model BusAvailability {
+  id          String              @id @default(cuid())
+  busId       String
+  bus         Bus                 @relation(fields: [busId], references: [id], onDelete: Cascade)
+  type        BusAvailabilityType
+  startAt     DateTime
+  endAt       DateTime
+  note        String?
+  createdAt   DateTime            @default(now())
+  createdById String?
+  createdBy   AdminUser?          @relation(fields: [createdById], references: [id])
+
+  @@index([busId, startAt, endAt])
   @@map("bus_availability")
 }
 
@@ -142,11 +195,36 @@ model RegularLine {
   active           Boolean  @default(true)
   createdAt        DateTime @default(now())
 
-  stops     LineStop[]
-  schedules LineSchedule[]
-  inquiries Inquiry[]
+  stops             LineStop[]
+  schedules         LineSchedule[]
+  inquiries         Inquiry[]
+  driverAssignments DriverLineAssignment[]
 
   @@map("regular_lines")
+}
+
+enum DriverLineRole {
+  GLOWNY
+  PREFEROWANY
+  REZERWOWY
+}
+
+/// Trwałe przypisanie kierowcy do linii regularnej. Wejście do silnika rekomendacji
+/// obsady (lib/driver-recommendation.ts) — podnosi ranking kierowcy przy sugestii
+/// obsady zleceń powiązanych z daną linią. Nigdy nie tworzy automatycznego przydziału
+/// do konkretnego zlecenia — o tym zawsze decyduje ręcznie administrator.
+model DriverLineAssignment {
+  id        String         @id @default(cuid())
+  driverId  String
+  driver    Driver         @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  lineId    String
+  line      RegularLine    @relation(fields: [lineId], references: [id], onDelete: Cascade)
+  role      DriverLineRole
+  note      String?
+  createdAt DateTime       @default(now())
+
+  @@unique([driverId, lineId])
+  @@map("driver_line_assignments")
 }
 
 model LineStop {
@@ -459,9 +537,10 @@ model Booking {
   createdById     String?
   createdBy       AdminUser?    @relation(fields: [createdById], references: [id])
 
-  routePoints RoutePoint[]
-  drivers     BookingDriver[]
-  buses       BookingBus[]
+  routePoints      RoutePoint[]
+  drivers          BookingDriver[]
+  buses            BookingBus[]
+  assignmentHistory BookingAssignmentHistory[]
 
   @@index([startAt, endAt])
   @@index([status])
@@ -496,4 +575,37 @@ model BookingBus {
 
   @@unique([bookingId, busId])
   @@map("booking_buses")
+}
+
+enum AssignmentResourceType {
+  KIEROWCA
+  AUTOBUS
+}
+
+enum AssignmentChangeType {
+  PRZYPISANO
+  ZMIENIONO
+  USUNIETO
+}
+
+/// Append-only historia zmian obsady zlecenia (przypisanie / zmiana / usunięcie
+/// kierowcy lub autobusu). Niezależna od aktualnego stanu BookingDriver/BookingBus —
+/// resourceLabel jest migawką nazwy w momencie zmiany, więc historia pozostaje
+/// czytelna nawet po usunięciu danego kierowcy/autobusu z bazy. Zawsze efekt
+/// świadomej, ręcznej decyzji administratora — nigdy zapisu automatycznego algorytmu.
+model BookingAssignmentHistory {
+  id            String                  @id @default(cuid())
+  bookingId     String
+  booking       Booking                 @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  resourceType  AssignmentResourceType
+  resourceId    String
+  resourceLabel String
+  changeType    AssignmentChangeType
+  note          String?
+  changedAt     DateTime                @default(now())
+  changedById   String?
+  changedBy     AdminUser?              @relation(fields: [changedById], references: [id])
+
+  @@index([bookingId, changedAt])
+  @@map("booking_assignment_history")
 }

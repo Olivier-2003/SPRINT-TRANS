@@ -5,10 +5,29 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { driverSchema, type DriverInput } from "@/lib/validation/driver";
 import { isForeignKeyConstraintError } from "@/lib/prisma-errors";
+import type { InquiryType } from "@/lib/generated/prisma/client";
 
 export type DriverFormState = { error?: string } | undefined;
 
 const LIST_PATH = "/admin/kierowcy";
+
+function toDriverData(parsed: DriverInput) {
+  return {
+    firstName: parsed.firstName,
+    lastName: parsed.lastName,
+    phone: parsed.phone,
+    licenseCategories: parsed.licenseCategories,
+    employmentStatus: parsed.employmentStatus,
+    email: parsed.email || null,
+    notes: parsed.notes || null,
+    restingHoursRequired: Number(parsed.restingHoursRequired),
+    maxDailyWorkHours: parsed.maxDailyWorkHours ? Number(parsed.maxDailyWorkHours) : null,
+    monthlyWorkHoursNorm: parsed.monthlyWorkHoursNorm ? Number(parsed.monthlyWorkHoursNorm) : null,
+    weeklyWorkHoursNorm: parsed.weeklyWorkHoursNorm ? Number(parsed.weeklyWorkHoursNorm) : null,
+    restrictedWorkTypes: parsed.restrictedWorkTypes as InquiryType[],
+    preferredWorkTypes: parsed.preferredWorkTypes as InquiryType[],
+  };
+}
 
 export async function createDriver(data: DriverInput): Promise<DriverFormState> {
   const parsed = driverSchema.safeParse(data);
@@ -16,13 +35,7 @@ export async function createDriver(data: DriverInput): Promise<DriverFormState> 
     return { error: parsed.error.issues[0]?.message ?? "Popraw błędy w formularzu." };
   }
 
-  await db.driver.create({
-    data: {
-      ...parsed.data,
-      email: parsed.data.email || null,
-      notes: parsed.data.notes || null,
-    },
-  });
+  await db.driver.create({ data: toDriverData(parsed.data) });
 
   revalidatePath(LIST_PATH);
   redirect(LIST_PATH);
@@ -39,11 +52,7 @@ export async function updateDriver(
 
   await db.driver.update({
     where: { id },
-    data: {
-      ...parsed.data,
-      email: parsed.data.email || null,
-      notes: parsed.data.notes || null,
-    },
+    data: toDriverData(parsed.data),
   });
 
   revalidatePath(LIST_PATH);

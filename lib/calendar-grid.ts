@@ -43,9 +43,49 @@ export function bookingCoversDay(start: Date, end: Date, day: Date): boolean {
   return start.getTime() < dayEnd.getTime() && end.getTime() > dayStart.getTime();
 }
 
+/** Kolejne dni danego miesiąca (bez dopełnienia do pełnych tygodni) — do widoków tabelarycznych. */
+export function getDaysInMonth(year: number, month: number): Date[] {
+  const daysCount = new Date(year, month, 0).getDate();
+  return Array.from({ length: daysCount }, (_, i) => new Date(year, month - 1, i + 1));
+}
+
 export function addMonths(year: number, month: number, delta: number): { year: number; month: number } {
   const total = (month - 1) + delta;
   const newYear = year + Math.floor(total / 12);
   const newMonth = ((total % 12) + 12) % 12;
   return { year: newYear, month: newMonth + 1 };
+}
+
+/** Parsuje "YYYY-MM-DD" na lokalną datę (północ). Zwraca dziś, jeśli wartość nieprawidłowa. */
+export function parseDateParam(value: string | undefined): Date {
+  if (value) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (match) {
+      const [, y, m, d] = match;
+      return new Date(Number(y), Number(m) - 1, Number(d));
+    }
+  }
+  const today = new Date();
+  return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+}
+
+export function formatDateParam(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+export function addDays(date: Date, delta: number): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + delta);
+}
+
+/** Poniedziałek tygodnia zawierającego podaną datę. */
+export function startOfWeek(date: Date): Date {
+  const weekday = (date.getDay() + 6) % 7; // 0 = poniedziałek
+  return addDays(date, -weekday);
+}
+
+/** Kolejne 7 dni tygodnia (poniedziałek–niedziela) zawierającego podaną datę. */
+export function getWeekDays(date: Date): Date[] {
+  const start = startOfWeek(date);
+  return Array.from({ length: 7 }, (_, i) => addDays(start, i));
 }

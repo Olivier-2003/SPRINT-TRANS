@@ -17,7 +17,7 @@ import type { ActionState } from "@/lib/actions/bookings";
 interface BusOption {
   id: string;
   label: string;
-  busy: boolean;
+  statusLabel: string | null;
 }
 
 interface AssignBusFormProps {
@@ -68,7 +68,7 @@ export function AssignBusForm({ bookingId, buses, action }: AssignBusFormProps) 
                 {buses.map((bus) => (
                   <SelectItem key={bus.id} value={bus.id}>
                     {bus.label}
-                    {bus.busy ? " — zajęty w tym terminie" : ""}
+                    {bus.statusLabel ? ` — ${bus.statusLabel}` : ""}
                   </SelectItem>
                 ))}
               </SelectContent>

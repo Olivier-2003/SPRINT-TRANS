@@ -23,7 +23,7 @@ const ROLE_OPTIONS: { value: string; label: string }[] = [
 interface DriverOption {
   id: string;
   label: string;
-  busy: boolean;
+  statusLabel: string | null;
 }
 
 interface AssignDriverFormProps {
@@ -74,7 +74,7 @@ export function AssignDriverForm({ bookingId, drivers, action }: AssignDriverFor
                 {drivers.map((driver) => (
                   <SelectItem key={driver.id} value={driver.id}>
                     {driver.label}
-                    {driver.busy ? " — zajęty w tym terminie" : ""}
+                    {driver.statusLabel ? ` — ${driver.statusLabel}` : ""}
                   </SelectItem>
                 ))}
               </SelectContent>

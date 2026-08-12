@@ -1,8 +1,22 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CalendarGrid } from "@/components/admin/calendar/CalendarGrid";
+import { ResourceAvailabilityGrid } from "@/components/admin/calendar/ResourceAvailabilityGrid";
+import { DayScheduleView } from "@/components/admin/calendar/DayScheduleView";
+import { WeekScheduleView } from "@/components/admin/calendar/WeekScheduleView";
 import { getBookingsOverlapping } from "@/lib/data/calendar";
-import { buildMonthGrid, addMonths, MONTH_NAMES_PL } from "@/lib/calendar-grid";
+import { getDriverResourceGrid, getBusResourceGrid } from "@/lib/resource-calendar";
+import { getScheduleEntries } from "@/lib/schedule-view";
+import {
+  buildMonthGrid,
+  getDaysInMonth,
+  addMonths,
+  MONTH_NAMES_PL,
+  parseDateParam,
+  formatDateParam,
+  addDays,
+  getWeekDays,
+} from "@/lib/calendar-grid";
 
 export const dynamic = "force-dynamic";
 
@@ -11,67 +25,177 @@ function parseParam(value: string | undefined, fallback: number): number {
   return Number.isInteger(parsed) ? parsed : fallback;
 }
 
+const VIEWS = [
+  { value: "dzien", label: "Dzień" },
+  { value: "tydzien", label: "Tydzień" },
+  { value: "miesiac", label: "Miesiąc" },
+  { value: "kierowcy", label: "Kierowcy" },
+  { value: "autobusy", label: "Autobusy" },
+] as const;
+type ViewValue = (typeof VIEWS)[number]["value"];
+
 export default async function CalendarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ year?: string; month?: string }>;
+  searchParams: Promise<{ year?: string; month?: string; date?: string; view?: string }>;
 }) {
   const params = await searchParams;
   const today = new Date();
   const year = parseParam(params.year, today.getFullYear());
   const month = parseParam(params.month, today.getMonth() + 1);
+  const date = parseDateParam(params.date);
+  const view: ViewValue = VIEWS.some((v) => v.value === params.view) ? (params.view as ViewValue) : "dzien";
 
-  const days = buildMonthGrid(year, month);
-  const rangeStart = days[0].date;
-  const rangeEnd = new Date(days[41].date.getTime() + 24 * 60 * 60 * 1000);
+  const isDateView = view === "dzien" || view === "tydzien";
 
-  const bookings = await getBookingsOverlapping(rangeStart, rangeEnd);
+  const monthPrev = addMonths(year, month, -1);
+  const monthNext = addMonths(year, month, 1);
+  const dateStep = view === "tydzien" ? 7 : 1;
+  const datePrev = addDays(date, -dateStep);
+  const dateNext = addDays(date, dateStep);
 
-  const prev = addMonths(year, month, -1);
-  const next = addMonths(year, month, 1);
+  const linkFor = (overrides: { year?: number; month?: number; date?: string; view?: ViewValue }) => {
+    const v = overrides.view ?? view;
+    const params = new URLSearchParams();
+    params.set("view", v);
+    if (v === "dzien" || v === "tydzien") {
+      params.set("date", overrides.date ?? formatDateParam(date));
+    } else {
+      params.set("year", String(overrides.year ?? year));
+      params.set("month", String(overrides.month ?? month));
+    }
+    return `/admin/kalendarz?${params.toString()}`;
+  };
 
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Kalendarz</h1>
         <p className="text-sm text-muted-foreground">
-          Zlecenia w wybranym miesiącu wraz z przypisanymi autobusami i kierowcami.
+          Zlecenia, przypisani kierowcy i autobusy, godziny oraz konflikty i ostrzeżenia.
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
+      <div className="flex gap-2">
+        {VIEWS.map((v) => (
           <Button
-            render={<Link href={`/admin/kalendarz?year=${prev.year}&month=${prev.month}`} />}
+            key={v.value}
+            render={<Link href={linkFor({ view: v.value })} />}
             nativeButton={false}
-            variant="outline"
+            variant={view === v.value ? "default" : "outline"}
             size="sm"
           >
-            ← Poprzedni
+            {v.label}
           </Button>
-          <Button
-            render={<Link href={`/admin/kalendarz?year=${today.getFullYear()}&month=${today.getMonth() + 1}`} />}
-            nativeButton={false}
-            variant="outline"
-            size="sm"
-          >
-            Dziś
-          </Button>
-          <Button
-            render={<Link href={`/admin/kalendarz?year=${next.year}&month=${next.month}`} />}
-            nativeButton={false}
-            variant="outline"
-            size="sm"
-          >
-            Następny →
-          </Button>
-        </div>
-        <span className="text-lg font-medium">
-          {MONTH_NAMES_PL[month - 1]} {year}
-        </span>
+        ))}
       </div>
 
-      <CalendarGrid days={days} bookings={bookings} today={today} />
+      {isDateView ? (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Button
+              render={<Link href={linkFor({ date: formatDateParam(datePrev) })} />}
+              nativeButton={false}
+              variant="outline"
+              size="sm"
+            >
+              ← Poprzedni
+            </Button>
+            <Button
+              render={<Link href={linkFor({ date: formatDateParam(today) })} />}
+              nativeButton={false}
+              variant="outline"
+              size="sm"
+            >
+              Dziś
+            </Button>
+            <Button
+              render={<Link href={linkFor({ date: formatDateParam(dateNext) })} />}
+              nativeButton={false}
+              variant="outline"
+              size="sm"
+            >
+              Następny →
+            </Button>
+          </div>
+          <span className="text-lg font-medium">
+            {view === "tydzien"
+              ? `Tydzień od ${getWeekDays(date)[0].toLocaleDateString("pl-PL", { day: "2-digit", month: "2-digit", year: "numeric" })}`
+              : date.toLocaleDateString("pl-PL", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" })}
+          </span>
+        </div>
+      ) : (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Button
+              render={<Link href={linkFor({ year: monthPrev.year, month: monthPrev.month })} />}
+              nativeButton={false}
+              variant="outline"
+              size="sm"
+            >
+              ← Poprzedni
+            </Button>
+            <Button
+              render={<Link href={linkFor({ year: today.getFullYear(), month: today.getMonth() + 1 })} />}
+              nativeButton={false}
+              variant="outline"
+              size="sm"
+            >
+              Dziś
+            </Button>
+            <Button
+              render={<Link href={linkFor({ year: monthNext.year, month: monthNext.month })} />}
+              nativeButton={false}
+              variant="outline"
+              size="sm"
+            >
+              Następny →
+            </Button>
+          </div>
+          <span className="text-lg font-medium">
+            {MONTH_NAMES_PL[month - 1]} {year}
+          </span>
+        </div>
+      )}
+
+      {view === "dzien" && <DayView date={date} />}
+      {view === "tydzien" && <WeekView date={date} />}
+      {view === "miesiac" && <BookingsView year={year} month={month} today={today} />}
+      {view === "kierowcy" && <DriversView year={year} month={month} />}
+      {view === "autobusy" && <BusesView year={year} month={month} />}
     </div>
   );
+}
+
+async function DayView({ date }: { date: Date }) {
+  const rangeStart = date;
+  const rangeEnd = addDays(date, 1);
+  const entries = await getScheduleEntries(rangeStart, rangeEnd);
+  return <DayScheduleView bookings={entries} />;
+}
+
+async function WeekView({ date }: { date: Date }) {
+  const days = getWeekDays(date);
+  const rangeStart = days[0];
+  const rangeEnd = addDays(days[6], 1);
+  const entries = await getScheduleEntries(rangeStart, rangeEnd);
+  return <WeekScheduleView days={days} bookings={entries} />;
+}
+
+async function BookingsView({ year, month, today }: { year: number; month: number; today: Date }) {
+  const days = buildMonthGrid(year, month);
+  const rangeStart = days[0].date;
+  const rangeEnd = new Date(days[41].date.getTime() + 24 * 60 * 60 * 1000);
+  const bookings = await getBookingsOverlapping(rangeStart, rangeEnd);
+  return <CalendarGrid days={days} bookings={bookings} today={today} />;
+}
+
+async function DriversView({ year, month }: { year: number; month: number }) {
+  const resources = await getDriverResourceGrid(year, month);
+  return <ResourceAvailabilityGrid days={getDaysInMonth(year, month)} resources={resources} />;
+}
+
+async function BusesView({ year, month }: { year: number; month: number }) {
+  const resources = await getBusResourceGrid(year, month);
+  return <ResourceAvailabilityGrid days={getDaysInMonth(year, month)} resources={resources} />;
 }

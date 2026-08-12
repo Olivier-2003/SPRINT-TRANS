@@ -14,6 +14,17 @@ export const assignBusSchema = z.object({
 });
 export type AssignBusInput = z.infer<typeof assignBusSchema>;
 
+export const swapDriverSchema = z.object({
+  newDriverId: z.string().min(1, "Wybierz nowego kierowcę."),
+  roleOnTrip: z.union([z.enum(BOOKING_DRIVER_ROLES), z.literal("")]),
+});
+export type SwapDriverInput = z.infer<typeof swapDriverSchema>;
+
+export const swapBusSchema = z.object({
+  newBusId: z.string().min(1, "Wybierz nowy autobus."),
+});
+export type SwapBusInput = z.infer<typeof swapBusSchema>;
+
 export const bookingRouteSchema = z.object({
   points: z
     .array(

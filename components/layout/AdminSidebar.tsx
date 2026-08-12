@@ -7,6 +7,7 @@ const NAV_SECTIONS = [
   { label: "Zapytania", href: "/admin/zapytania", enabled: true },
   { label: "Zlecenia", href: "/admin/zlecenia", enabled: true },
   { label: "Kierowcy", href: "/admin/kierowcy", enabled: true },
+  { label: "Czas pracy kierowców", href: "/admin/kierowcy/rozliczenie", enabled: true },
   { label: "Autobusy", href: "/admin/autobusy", enabled: true },
   { label: "Linie regularne", href: "/admin/linie", enabled: true },
   { label: "Wycieczki", href: "/admin/wycieczki", enabled: true },
@@ -20,7 +21,7 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ adminName, adminEmail }: AdminSidebarProps) {
   return (
-    <aside className="hidden w-60 shrink-0 border-r bg-muted/30 sm:flex sm:flex-col">
+    <aside className="hidden w-60 shrink-0 border-r bg-muted/30 sm:flex sm:flex-col print:hidden">
       <div className="border-b px-5 py-4 text-sm font-semibold tracking-tight">
         SPRINT-TRANS · Panel
       </div>

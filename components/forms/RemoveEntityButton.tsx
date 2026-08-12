@@ -2,21 +2,15 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import type { ActionState } from "@/lib/actions/bookings";
 
-interface RemoveAssignmentButtonProps {
-  bookingId: string;
+interface RemoveEntityButtonProps {
+  parentId: string;
   targetId: string;
-  action: (bookingId: string, targetId: string) => Promise<ActionState>;
+  action: (parentId: string, targetId: string) => Promise<{ error?: string; success?: boolean } | undefined>;
   confirmMessage: string;
 }
 
-export function RemoveAssignmentButton({
-  bookingId,
-  targetId,
-  action,
-  confirmMessage,
-}: RemoveAssignmentButtonProps) {
+export function RemoveEntityButton({ parentId, targetId, action, confirmMessage }: RemoveEntityButtonProps) {
   const [error, setError] = useState<string | undefined>();
   const [isPending, startTransition] = useTransition();
 
@@ -24,7 +18,7 @@ export function RemoveAssignmentButton({
     if (!window.confirm(confirmMessage)) return;
     setError(undefined);
     startTransition(async () => {
-      const result = await action(bookingId, targetId);
+      const result = await action(parentId, targetId);
       if (result?.error) setError(result.error);
     });
   };

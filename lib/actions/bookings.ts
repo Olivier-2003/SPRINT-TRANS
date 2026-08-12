@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import {
   bookingNotesSchema,
   bookingStatusSchema,
@@ -11,10 +12,14 @@ import {
 import {
   assignDriverSchema,
   assignBusSchema,
+  swapDriverSchema,
+  swapBusSchema,
   bookingRouteSchema,
   bookingScheduleSchema,
   type AssignDriverInput,
   type AssignBusInput,
+  type SwapDriverInput,
+  type SwapBusInput,
   type BookingRouteInput,
   type BookingScheduleInput,
 } from "@/lib/validation/booking-admin";
@@ -23,6 +28,11 @@ export type ActionState = { error?: string; success?: boolean } | undefined;
 
 function detailPath(id: string) {
   return `/admin/zlecenia/${id}`;
+}
+
+async function currentAdminId(): Promise<string | undefined> {
+  const session = await auth();
+  return session?.user?.id;
 }
 
 export async function updateBookingNotes(id: string, data: BookingNotesInput): Promise<ActionState> {
@@ -57,20 +67,39 @@ export async function assignDriver(bookingId: string, data: AssignDriverInput): 
     return { error: parsed.error.issues[0]?.message ?? "Popraw dane przypisania." };
   }
 
-  const existing = await db.bookingDriver.findUnique({
-    where: { bookingId_driverId: { bookingId, driverId: parsed.data.driverId } },
-  });
+  const [existing, driver] = await Promise.all([
+    db.bookingDriver.findUnique({
+      where: { bookingId_driverId: { bookingId, driverId: parsed.data.driverId } },
+    }),
+    db.driver.findUnique({ where: { id: parsed.data.driverId } }),
+  ]);
   if (existing) {
     return { error: "Ten kierowca jest już przypisany do tego zlecenia." };
   }
+  if (!driver) {
+    return { error: "Nie znaleziono kierowcy." };
+  }
 
-  await db.bookingDriver.create({
-    data: {
-      bookingId,
-      driverId: parsed.data.driverId,
-      roleOnTrip: parsed.data.roleOnTrip || null,
-    },
-  });
+  const changedById = await currentAdminId();
+  await db.$transaction([
+    db.bookingDriver.create({
+      data: {
+        bookingId,
+        driverId: parsed.data.driverId,
+        roleOnTrip: parsed.data.roleOnTrip || null,
+      },
+    }),
+    db.bookingAssignmentHistory.create({
+      data: {
+        bookingId,
+        resourceType: "KIEROWCA",
+        resourceId: driver.id,
+        resourceLabel: `${driver.firstName} ${driver.lastName}`,
+        changeType: "PRZYPISANO",
+        changedById,
+      },
+    }),
+  ]);
 
   revalidatePath(detailPath(bookingId));
   revalidatePath("/admin/kalendarz");
@@ -78,9 +107,81 @@ export async function assignDriver(bookingId: string, data: AssignDriverInput): 
 }
 
 export async function removeDriver(bookingId: string, driverId: string): Promise<ActionState> {
-  await db.bookingDriver.delete({
-    where: { bookingId_driverId: { bookingId, driverId } },
-  });
+  const driver = await db.driver.findUnique({ where: { id: driverId } });
+  const changedById = await currentAdminId();
+
+  await db.$transaction([
+    db.bookingDriver.delete({ where: { bookingId_driverId: { bookingId, driverId } } }),
+    db.bookingAssignmentHistory.create({
+      data: {
+        bookingId,
+        resourceType: "KIEROWCA",
+        resourceId: driverId,
+        resourceLabel: driver ? `${driver.firstName} ${driver.lastName}` : "(usunięty kierowca)",
+        changeType: "USUNIETO",
+        changedById,
+      },
+    }),
+  ]);
+
+  revalidatePath(detailPath(bookingId));
+  revalidatePath("/admin/kalendarz");
+  return { success: true };
+}
+
+/** Szybka zmiana obsady — zastępuje kierowcę innym w jednej akcji, bez usuwania zlecenia. */
+export async function swapDriver(
+  bookingId: string,
+  oldDriverId: string,
+  data: SwapDriverInput
+): Promise<ActionState> {
+  const parsed = swapDriverSchema.safeParse(data);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Popraw dane zmiany przydziału." };
+  }
+  if (parsed.data.newDriverId === oldDriverId) {
+    return { error: "Wybierz innego kierowcę niż obecnie przypisany." };
+  }
+
+  const [existingNew, oldDriver, newDriver] = await Promise.all([
+    db.bookingDriver.findUnique({
+      where: { bookingId_driverId: { bookingId, driverId: parsed.data.newDriverId } },
+    }),
+    db.driver.findUnique({ where: { id: oldDriverId } }),
+    db.driver.findUnique({ where: { id: parsed.data.newDriverId } }),
+  ]);
+  if (existingNew) {
+    return { error: "Ten kierowca jest już przypisany do tego zlecenia." };
+  }
+  if (!newDriver) {
+    return { error: "Nie znaleziono nowego kierowcy." };
+  }
+
+  const changedById = await currentAdminId();
+  const oldLabel = oldDriver ? `${oldDriver.firstName} ${oldDriver.lastName}` : "(usunięty kierowca)";
+  const newLabel = `${newDriver.firstName} ${newDriver.lastName}`;
+
+  await db.$transaction([
+    db.bookingDriver.delete({ where: { bookingId_driverId: { bookingId, driverId: oldDriverId } } }),
+    db.bookingDriver.create({
+      data: {
+        bookingId,
+        driverId: parsed.data.newDriverId,
+        roleOnTrip: parsed.data.roleOnTrip || null,
+      },
+    }),
+    db.bookingAssignmentHistory.create({
+      data: {
+        bookingId,
+        resourceType: "KIEROWCA",
+        resourceId: newDriver.id,
+        resourceLabel: newLabel,
+        changeType: "ZMIENIONO",
+        note: `Zastąpiono: ${oldLabel} → ${newLabel}`,
+        changedById,
+      },
+    }),
+  ]);
 
   revalidatePath(detailPath(bookingId));
   revalidatePath("/admin/kalendarz");
@@ -93,16 +194,33 @@ export async function assignBus(bookingId: string, data: AssignBusInput): Promis
     return { error: parsed.error.issues[0]?.message ?? "Popraw dane przypisania." };
   }
 
-  const existing = await db.bookingBus.findUnique({
-    where: { bookingId_busId: { bookingId, busId: parsed.data.busId } },
-  });
+  const [existing, bus] = await Promise.all([
+    db.bookingBus.findUnique({
+      where: { bookingId_busId: { bookingId, busId: parsed.data.busId } },
+    }),
+    db.bus.findUnique({ where: { id: parsed.data.busId } }),
+  ]);
   if (existing) {
     return { error: "Ten autobus jest już przypisany do tego zlecenia." };
   }
+  if (!bus) {
+    return { error: "Nie znaleziono autobusu." };
+  }
 
-  await db.bookingBus.create({
-    data: { bookingId, busId: parsed.data.busId },
-  });
+  const changedById = await currentAdminId();
+  await db.$transaction([
+    db.bookingBus.create({ data: { bookingId, busId: parsed.data.busId } }),
+    db.bookingAssignmentHistory.create({
+      data: {
+        bookingId,
+        resourceType: "AUTOBUS",
+        resourceId: bus.id,
+        resourceLabel: `${bus.registrationNumber} — ${bus.brandModel}`,
+        changeType: "PRZYPISANO",
+        changedById,
+      },
+    }),
+  ]);
 
   revalidatePath(detailPath(bookingId));
   revalidatePath("/admin/kalendarz");
@@ -110,9 +228,69 @@ export async function assignBus(bookingId: string, data: AssignBusInput): Promis
 }
 
 export async function removeBus(bookingId: string, busId: string): Promise<ActionState> {
-  await db.bookingBus.delete({
-    where: { bookingId_busId: { bookingId, busId } },
-  });
+  const bus = await db.bus.findUnique({ where: { id: busId } });
+  const changedById = await currentAdminId();
+
+  await db.$transaction([
+    db.bookingBus.delete({ where: { bookingId_busId: { bookingId, busId } } }),
+    db.bookingAssignmentHistory.create({
+      data: {
+        bookingId,
+        resourceType: "AUTOBUS",
+        resourceId: busId,
+        resourceLabel: bus ? `${bus.registrationNumber} — ${bus.brandModel}` : "(usunięty autobus)",
+        changeType: "USUNIETO",
+        changedById,
+      },
+    }),
+  ]);
+
+  revalidatePath(detailPath(bookingId));
+  revalidatePath("/admin/kalendarz");
+  return { success: true };
+}
+
+/** Szybka zmiana obsady — zastępuje autobus innym w jednej akcji, bez usuwania zlecenia. */
+export async function swapBus(bookingId: string, oldBusId: string, data: SwapBusInput): Promise<ActionState> {
+  const parsed = swapBusSchema.safeParse(data);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Popraw dane zmiany przydziału." };
+  }
+  if (parsed.data.newBusId === oldBusId) {
+    return { error: "Wybierz inny autobus niż obecnie przypisany." };
+  }
+
+  const [existingNew, oldBus, newBus] = await Promise.all([
+    db.bookingBus.findUnique({ where: { bookingId_busId: { bookingId, busId: parsed.data.newBusId } } }),
+    db.bus.findUnique({ where: { id: oldBusId } }),
+    db.bus.findUnique({ where: { id: parsed.data.newBusId } }),
+  ]);
+  if (existingNew) {
+    return { error: "Ten autobus jest już przypisany do tego zlecenia." };
+  }
+  if (!newBus) {
+    return { error: "Nie znaleziono nowego autobusu." };
+  }
+
+  const changedById = await currentAdminId();
+  const oldLabel = oldBus ? `${oldBus.registrationNumber} — ${oldBus.brandModel}` : "(usunięty autobus)";
+  const newLabel = `${newBus.registrationNumber} — ${newBus.brandModel}`;
+
+  await db.$transaction([
+    db.bookingBus.delete({ where: { bookingId_busId: { bookingId, busId: oldBusId } } }),
+    db.bookingBus.create({ data: { bookingId, busId: parsed.data.newBusId } }),
+    db.bookingAssignmentHistory.create({
+      data: {
+        bookingId,
+        resourceType: "AUTOBUS",
+        resourceId: newBus.id,
+        resourceLabel: newLabel,
+        changeType: "ZMIENIONO",
+        note: `Zastąpiono: ${oldLabel} → ${newLabel}`,
+        changedById,
+      },
+    }),
+  ]);
 
   revalidatePath(detailPath(bookingId));
   revalidatePath("/admin/kalendarz");

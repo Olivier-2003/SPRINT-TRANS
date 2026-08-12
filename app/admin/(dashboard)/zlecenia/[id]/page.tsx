@@ -3,13 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BookingOverview } from "@/components/admin/bookings/BookingOverview";
 import { BookingAssignments } from "@/components/admin/bookings/BookingAssignments";
+import { BookingAssignmentHistoryList } from "@/components/admin/bookings/BookingAssignmentHistoryList";
 import { BookingStatusForm } from "@/components/forms/BookingStatusForm";
 import { BookingNotesForm } from "@/components/forms/BookingNotesForm";
 import { BookingRouteForm } from "@/components/forms/BookingRouteForm";
 import { getBooking } from "@/lib/data/bookings";
 import { getDrivers } from "@/lib/data/drivers";
 import { getBuses } from "@/lib/data/buses";
-import { getResourceConflicts } from "@/lib/data/availability";
+import { computeDriverAvailability, computeBusAvailability } from "@/lib/availability-engine";
+import { getDriverRecommendations } from "@/lib/driver-recommendation";
 import {
   updateBookingStatus,
   updateBookingNotes,
@@ -26,10 +28,26 @@ export default async function BookingDetailPage({
   const booking = await getBooking(id);
   if (!booking) notFound();
 
-  const [allDrivers, allBuses, conflicts] = await Promise.all([
+  const inquiryType = booking.sourceInquiry?.type ?? null;
+  const lineId = booking.sourceInquiry?.relatedLineId ?? null;
+
+  const [allDrivers, allBuses, driverStatuses, busStatuses, recommendations] = await Promise.all([
     getDrivers(),
     getBuses(),
-    getResourceConflicts(booking.startAt, booking.endAt, booking.id),
+    computeDriverAvailability({
+      startAt: booking.startAt,
+      endAt: booking.endAt,
+      excludeBookingId: booking.id,
+      inquiryType,
+    }),
+    computeBusAvailability({ startAt: booking.startAt, endAt: booking.endAt, excludeBookingId: booking.id }),
+    getDriverRecommendations({
+      startAt: booking.startAt,
+      endAt: booking.endAt,
+      excludeBookingId: booking.id,
+      inquiryType,
+      lineId,
+    }),
   ]);
 
   return (
@@ -78,10 +96,20 @@ export default async function BookingDetailPage({
           assignedBuses={booking.buses}
           allDrivers={allDrivers}
           allBuses={allBuses}
-          busyDriverIds={conflicts.busyDriverIds}
-          busyBusIds={conflicts.busyBusIds}
+          driverStatuses={driverStatuses}
+          busStatuses={busStatuses}
+          recommendations={recommendations}
         />
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Historia przydziałów</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <BookingAssignmentHistoryList entries={booking.assignmentHistory} />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

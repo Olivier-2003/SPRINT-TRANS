@@ -23,6 +23,10 @@ export function getBooking(id: string) {
       drivers: { include: { driver: true } },
       buses: { include: { bus: true } },
       createdBy: { select: { name: true } },
+      assignmentHistory: {
+        orderBy: { changedAt: "desc" },
+        include: { changedBy: { select: { name: true } } },
+      },
     },
   });
 }
