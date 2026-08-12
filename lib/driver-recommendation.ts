@@ -1,5 +1,11 @@
 import { db } from "@/lib/db";
-import { computeDriverAvailability, type OverallStatus, type AvailabilityIssue, type DriverIssueType } from "@/lib/availability-engine";
+import {
+  computeDriverAvailability,
+  type OverallStatus,
+  type AvailabilityIssue,
+  type DriverIssueType,
+  type VirtualAssignment,
+} from "@/lib/availability-engine";
 import { getDriverMonthlySummaries } from "@/lib/driver-timesheet";
 import type { InquiryType, DriverLineRole } from "@/lib/generated/prisma/client";
 
@@ -32,12 +38,20 @@ interface GetDriverRecommendationsParams {
   inquiryType?: InquiryType | null;
   lineId?: string | null;
   driverIds?: string[];
+  /** Jeszcze niezapisane propozycje z tego samego przebiegu generatora grafiku (Etap 9) —
+   *  brane pod uwagę przy liczeniu konfliktów/odpoczynku tak samo jak realne zlecenia. */
+  virtualAssignments?: VirtualAssignment[];
+  /** Dodatkowe godziny w bieżącym miesiącu wynikające z wcześniejszych propozycji tego
+   *  samego przebiegu generowania — doliczane do bilansu miesięcznego przed scoringiem,
+   *  żeby generator równomiernie rozkładał godziny zamiast oceniać każde zlecenie osobno. */
+  extraMonthlyHoursByDriver?: Map<string, number>;
 }
 
 export async function getDriverRecommendations(
   params: GetDriverRecommendationsParams
 ): Promise<DriverRecommendation[]> {
-  const { startAt, endAt, excludeBookingId, inquiryType, lineId, driverIds } = params;
+  const { startAt, endAt, excludeBookingId, inquiryType, lineId, driverIds, virtualAssignments, extraMonthlyHoursByDriver } =
+    params;
 
   const drivers = await db.driver.findMany({
     where: { employmentStatus: "ACTIVE", ...(driverIds ? { id: { in: driverIds } } : {}) },
@@ -48,7 +62,7 @@ export async function getDriverRecommendations(
   if (activeDriverIds.length === 0) return [];
 
   const [availability, lineAssignments, historyBookings, monthlySummaries] = await Promise.all([
-    computeDriverAvailability({ startAt, endAt, excludeBookingId, inquiryType, driverIds: activeDriverIds }),
+    computeDriverAvailability({ startAt, endAt, excludeBookingId, inquiryType, driverIds: activeDriverIds, virtualAssignments }),
     lineId
       ? db.driverLineAssignment.findMany({ where: { lineId, driverId: { in: activeDriverIds } } })
       : Promise.resolve([]),
@@ -73,8 +87,9 @@ export async function getDriverRecommendations(
   const scored: { recommendation: DriverRecommendation; score: number }[] = drivers.map((driver) => {
     const avail = availability.get(driver.id) ?? { status: "DOSTEPNY" as OverallStatus, issues: [] };
     const monthly = monthlyByDriver.get(driver.id);
-    const monthlyHours = monthly?.totalWorkHours ?? 0;
-    const monthlyBalanceHours = monthly?.balanceHours ?? null;
+    const extraHours = extraMonthlyHoursByDriver?.get(driver.id) ?? 0;
+    const monthlyHours = (monthly?.totalWorkHours ?? 0) + extraHours;
+    const monthlyBalanceHours = monthly?.balanceHours != null ? monthly.balanceHours + extraHours : null;
     const lineRole = lineRoleByDriver.get(driver.id) ?? null;
     const lineHistoryCount = lineHistoryByDriver.get(driver.id) ?? 0;
 

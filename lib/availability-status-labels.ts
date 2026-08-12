@@ -21,6 +21,7 @@ export const DRIVER_ISSUE_TYPE_LABELS: Record<DriverIssueType, string> = {
   PROBLEM_ODPOCZYNEK: "Problem z odpoczynkiem",
   OGRANICZENIE_RODZAJU_PRACY: "Ograniczenie rodzaju pracy",
   DOSTEPNOSC_CZESCIOWA: "Dostępność częściowa",
+  PRZEKROCZONY_DZIENNY_CZAS_PRACY: "Przekroczony dzienny czas pracy",
 };
 
 export const BUS_ISSUE_TYPE_LABELS: Record<BusIssueType, string> = {

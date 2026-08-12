@@ -3,6 +3,7 @@ import { getDriverAvailabilityOverlapping } from "@/lib/data/driver-availability
 import { getBusAvailabilityOverlapping } from "@/lib/data/bus-availability";
 import { DRIVER_AVAILABILITY_BLOCKING_TYPES, DRIVER_AVAILABILITY_TYPE_LABELS } from "@/lib/driver-availability-labels";
 import { BUS_AVAILABILITY_BLOCKING_TYPES, BUS_AVAILABILITY_TYPE_LABELS } from "@/lib/bus-availability-labels";
+import { overlapHours } from "@/lib/driver-timesheet";
 import type { InquiryType } from "@/lib/generated/prisma/client";
 
 /**
@@ -21,7 +22,8 @@ export type DriverIssueType =
   | "NIEDOSTEPNOSC"
   | "PROBLEM_ODPOCZYNEK"
   | "OGRANICZENIE_RODZAJU_PRACY"
-  | "DOSTEPNOSC_CZESCIOWA";
+  | "DOSTEPNOSC_CZESCIOWA"
+  | "PRZEKROCZONY_DZIENNY_CZAS_PRACY";
 
 export type BusIssueType = "KONFLIKT_ZLECENIE" | "NIEDOSTEPNOSC";
 
@@ -41,6 +43,21 @@ export interface BusAvailabilityResult {
   busId: string;
   status: OverallStatus;
   issues: AvailabilityIssue<BusIssueType>[];
+}
+
+/**
+ * Hipotetyczne (jeszcze niezapisane) przypisanie brane pod uwagę przy liczeniu
+ * konfliktów/odpoczynku — używane wyłącznie przez generator propozycji grafiku
+ * (Etap 9) do symulowania skutków wcześniejszych propozycji w tym samym przebiegu
+ * generowania, bez dotykania bazy danych. Traktowane dokładnie tak samo jak
+ * rzeczywiste zlecenie z bazy przy liczeniu konfliktów i luk odpoczynku.
+ */
+export interface VirtualAssignment {
+  driverId?: string;
+  busId?: string;
+  startAt: Date;
+  endAt: Date;
+  label: string;
 }
 
 const REST_LOOKAROUND_HOURS = 72;
@@ -63,22 +80,31 @@ interface ComputeDriverAvailabilityParams {
   excludeBookingId?: string;
   inquiryType?: InquiryType | null;
   driverIds?: string[];
+  virtualAssignments?: VirtualAssignment[];
+}
+
+interface DriverBookingLike {
+  id: string;
+  customerName: string;
+  startAt: Date;
+  endAt: Date;
+  drivers: { driverId: string }[];
 }
 
 export async function computeDriverAvailability(
   params: ComputeDriverAvailabilityParams
 ): Promise<Map<string, DriverAvailabilityResult>> {
-  const { startAt, endAt, excludeBookingId, inquiryType, driverIds } = params;
+  const { startAt, endAt, excludeBookingId, inquiryType, driverIds, virtualAssignments } = params;
 
   const drivers = await db.driver.findMany({
     where: driverIds ? { id: { in: driverIds } } : {},
-    select: { id: true, restingHoursRequired: true, restrictedWorkTypes: true },
+    select: { id: true, restingHoursRequired: true, restrictedWorkTypes: true, maxDailyWorkHours: true },
   });
 
   const paddedStart = new Date(startAt.getTime() - REST_LOOKAROUND_HOURS * 60 * 60 * 1000);
   const paddedEnd = new Date(endAt.getTime() + REST_LOOKAROUND_HOURS * 60 * 60 * 1000);
 
-  const nearbyBookings = await db.booking.findMany({
+  const realBookings = await db.booking.findMany({
     where: {
       status: { not: "ANULOWANE" },
       startAt: { lt: paddedEnd },
@@ -93,6 +119,19 @@ export async function computeDriverAvailability(
       drivers: { select: { driverId: true } },
     },
   });
+
+  // Wirtualne przypisania (jeszcze niezapisane propozycje generatora grafiku) traktowane
+  // identycznie jak rzeczywiste zlecenia przy liczeniu konfliktów i odpoczynku.
+  const virtualAsBookings: DriverBookingLike[] = (virtualAssignments ?? [])
+    .filter((va) => va.driverId && va.startAt.getTime() < paddedEnd.getTime() && va.endAt.getTime() > paddedStart.getTime())
+    .map((va, i) => ({
+      id: `virtual-driver-${i}`,
+      customerName: va.label,
+      startAt: va.startAt,
+      endAt: va.endAt,
+      drivers: [{ driverId: va.driverId! }],
+    }));
+  const nearbyBookings: DriverBookingLike[] = [...realBookings, ...virtualAsBookings];
 
   const availabilityRecords = await getDriverAvailabilityOverlapping(
     startAt,
@@ -167,6 +206,36 @@ export async function computeDriverAvailability(
       }
     }
 
+    // Maksymalny dzienny czas pracy — dla każdego dnia objętego kandydackim zleceniem
+    // sumuje godziny tego zlecenia z pozostałymi zleceniami (rzeczywistymi i wirtualnymi)
+    // tego kierowcy w tym dniu i porównuje z limitem.
+    if (driver.maxDailyWorkHours != null) {
+      const maxDaily = Number(driver.maxDailyWorkHours);
+      const exceededDays = new Set<string>();
+      let cursor = new Date(startAt.getFullYear(), startAt.getMonth(), startAt.getDate());
+      const lastDay = new Date(endAt.getFullYear(), endAt.getMonth(), endAt.getDate());
+      while (cursor.getTime() <= lastDay.getTime()) {
+        const dayStart = new Date(cursor);
+        const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
+        let dayHours = overlapHours(startAt, endAt, dayStart, dayEnd);
+        for (const b of driverBookings) {
+          dayHours += overlapHours(b.startAt, b.endAt, dayStart, dayEnd);
+        }
+        if (dayHours > maxDaily) {
+          const dayLabel = dayStart.toLocaleDateString("pl-PL", { day: "2-digit", month: "2-digit", year: "numeric" });
+          if (!exceededDays.has(dayLabel)) {
+            exceededDays.add(dayLabel);
+            issues.push({
+              type: "PRZEKROCZONY_DZIENNY_CZAS_PRACY",
+              severity: "warning",
+              message: `Przekroczony maksymalny dzienny czas pracy w dniu ${dayLabel}: ${dayHours.toFixed(1)} h (limit ${maxDaily} h).`,
+            });
+          }
+        }
+        cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() + 1);
+      }
+    }
+
     // Ograniczenie rodzaju pracy.
     if (inquiryType && driver.restrictedWorkTypes.includes(inquiryType)) {
       issues.push({
@@ -187,19 +256,27 @@ interface ComputeBusAvailabilityParams {
   endAt: Date;
   excludeBookingId?: string;
   busIds?: string[];
+  virtualAssignments?: VirtualAssignment[];
+}
+
+interface BusBookingLike {
+  customerName: string;
+  startAt: Date;
+  endAt: Date;
+  buses: { busId: string }[];
 }
 
 export async function computeBusAvailability(
   params: ComputeBusAvailabilityParams
 ): Promise<Map<string, BusAvailabilityResult>> {
-  const { startAt, endAt, excludeBookingId, busIds } = params;
+  const { startAt, endAt, excludeBookingId, busIds, virtualAssignments } = params;
 
   const buses = await db.bus.findMany({
     where: busIds ? { id: { in: busIds } } : {},
     select: { id: true },
   });
 
-  const overlappingBookings = await db.booking.findMany({
+  const realBookings = await db.booking.findMany({
     where: {
       status: { not: "ANULOWANE" },
       startAt: { lt: endAt },
@@ -213,6 +290,16 @@ export async function computeBusAvailability(
       buses: { select: { busId: true } },
     },
   });
+
+  const virtualAsBookings: BusBookingLike[] = (virtualAssignments ?? [])
+    .filter((va) => va.busId && va.startAt.getTime() < endAt.getTime() && va.endAt.getTime() > startAt.getTime())
+    .map((va) => ({
+      customerName: va.label,
+      startAt: va.startAt,
+      endAt: va.endAt,
+      buses: [{ busId: va.busId! }],
+    }));
+  const overlappingBookings: BusBookingLike[] = [...realBookings, ...virtualAsBookings];
 
   const availabilityRecords = await getBusAvailabilityOverlapping(startAt, endAt, busIds);
 

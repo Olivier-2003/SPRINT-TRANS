@@ -4,6 +4,7 @@ import { LogoutButton } from "@/components/forms/LogoutButton";
 const NAV_SECTIONS = [
   { label: "Dashboard", href: "/admin", enabled: true },
   { label: "Kalendarz", href: "/admin/kalendarz", enabled: true },
+  { label: "Generator grafiku", href: "/admin/kalendarz/generator", enabled: true },
   { label: "Zapytania", href: "/admin/zapytania", enabled: true },
   { label: "Zlecenia", href: "/admin/zlecenia", enabled: true },
   { label: "Kierowcy", href: "/admin/kierowcy", enabled: true },

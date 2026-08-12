@@ -69,11 +69,16 @@ export default async function CalendarPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Kalendarz</h1>
-        <p className="text-sm text-muted-foreground">
-          Zlecenia, przypisani kierowcy i autobusy, godziny oraz konflikty i ostrzeżenia.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Kalendarz</h1>
+          <p className="text-sm text-muted-foreground">
+            Zlecenia, przypisani kierowcy i autobusy, godziny oraz konflikty i ostrzeżenia.
+          </p>
+        </div>
+        <Button render={<Link href="/admin/kalendarz/generator" />} nativeButton={false} variant="outline" size="sm">
+          Generator propozycji grafiku
+        </Button>
       </div>
 
       <div className="flex gap-2">

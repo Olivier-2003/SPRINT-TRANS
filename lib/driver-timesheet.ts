@@ -37,7 +37,7 @@ export interface DriverMonthlySummary {
   days: DailyWorkEntry[];
 }
 
-function overlapHours(aStart: Date, aEnd: Date, bStart: Date, bEnd: Date): number {
+export function overlapHours(aStart: Date, aEnd: Date, bStart: Date, bEnd: Date): number {
   const start = Math.max(aStart.getTime(), bStart.getTime());
   const end = Math.min(aEnd.getTime(), bEnd.getTime());
   return end > start ? (end - start) / MS_PER_HOUR : 0;
