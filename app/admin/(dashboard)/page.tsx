@@ -1,3 +1,4 @@
+import { Inbox, Clock, ClipboardList } from "lucide-react";
 import { DashboardStats } from "@/components/admin/DashboardStats";
 import { getDashboardStats } from "@/lib/data/dashboard";
 
@@ -17,9 +18,9 @@ export default async function AdminDashboardPage() {
 
       <DashboardStats
         stats={[
-          { label: "Nowe zapytania", value: stats.newInquiries },
-          { label: "Wycenione / oczekujące na klienta", value: stats.awaitingDecision },
-          { label: "Nadchodzące zlecenia", value: stats.upcomingBookings },
+          { label: "Nowe zapytania", value: stats.newInquiries, icon: Inbox },
+          { label: "Wycenione / oczekujące na klienta", value: stats.awaitingDecision, icon: Clock },
+          { label: "Nadchodzące zlecenia", value: stats.upcomingBookings, icon: ClipboardList },
         ]}
       />
     </div>

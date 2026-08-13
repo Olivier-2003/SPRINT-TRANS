@@ -52,6 +52,13 @@ const defaultValues: InquiryFormValues = {
   customerPhone: "",
 };
 
+export interface InquiryFormInitialValues {
+  origin?: string;
+  destination?: string;
+  requestedDepartureAt?: string;
+  passengerCount?: string;
+}
+
 function routeSnapshot(values: InquiryFormValues): string {
   return JSON.stringify({
     origin: values.origin,
@@ -63,7 +70,7 @@ function routeSnapshot(values: InquiryFormValues): string {
   });
 }
 
-export function InquiryForm() {
+export function InquiryForm({ initialValues }: { initialValues?: InquiryFormInitialValues }) {
   const [isPending, startTransition] = useTransition();
   const [previewError, setPreviewError] = useState<string | undefined>();
   const [breakdown, setBreakdown] = useState<PriceBreakdown | undefined>();
@@ -80,7 +87,7 @@ export function InquiryForm() {
     formState: { errors },
   } = useForm<InquiryFormValues>({
     resolver: zodResolver(inquiryFormSchema),
-    defaultValues,
+    defaultValues: { ...defaultValues, ...initialValues },
   });
 
   const stopsArray = useFieldArray({ control, name: "stops" });

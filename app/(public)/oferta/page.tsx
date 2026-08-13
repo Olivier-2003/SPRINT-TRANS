@@ -14,9 +14,9 @@ export default async function OfferPage() {
   ]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-14 md:py-16">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Oferta przewozów</h1>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Oferta przewozów</h1>
         <p className="text-muted-foreground">
           Linie regularne, wynajem autobusów oraz zorganizowane wycieczki.
         </p>

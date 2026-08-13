@@ -13,5 +13,9 @@ export default async function LineDetailPage({
   const line = await getPublicLine(lineId);
   if (!line) notFound();
 
-  return <LineTimetable line={line} />;
+  return (
+    <div className="mx-auto w-full max-w-4xl px-6 py-14 md:py-16">
+      <LineTimetable line={line} />
+    </div>
+  );
 }

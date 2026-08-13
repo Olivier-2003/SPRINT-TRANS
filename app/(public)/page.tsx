@@ -1,22 +1,27 @@
 import { HeroSection } from "@/components/sections/HeroSection";
-import { OfferHighlights } from "@/components/sections/OfferHighlights";
-import { getPublicLines } from "@/lib/data/lines";
+import { CalculatorTeaser } from "@/components/sections/CalculatorTeaser";
+import { FleetPreview } from "@/components/sections/FleetPreview";
+import { OfferBand } from "@/components/sections/OfferBand";
+import { TripsPreview } from "@/components/sections/TripsPreview";
+import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
+import { GlobalScrollBus } from "@/components/animations/GlobalScrollBus";
 import { getPublicBuses } from "@/lib/data/buses";
 import { getPublicTrips } from "@/lib/data/trips";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [lines, buses, trips] = await Promise.all([
-    getPublicLines(),
-    getPublicBuses(),
-    getPublicTrips(),
-  ]);
+  const [buses, trips] = await Promise.all([getPublicBuses(), getPublicTrips()]);
 
   return (
-    <div className="flex flex-1 flex-col gap-10">
+    <div className="flex-1">
+      <GlobalScrollBus />
       <HeroSection />
-      <OfferHighlights lineCount={lines.length} busCount={buses.length} tripCount={trips.length} />
+      <CalculatorTeaser />
+      <FleetPreview buses={buses} />
+      <OfferBand />
+      <TripsPreview trips={trips} />
+      <TestimonialsSection />
     </div>
   );
 }

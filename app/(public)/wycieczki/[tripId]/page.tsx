@@ -13,5 +13,9 @@ export default async function TripDetailPage({
   const trip = await getPublicTrip(tripId);
   if (!trip) notFound();
 
-  return <TripDetails trip={trip} />;
+  return (
+    <div className="mx-auto w-full max-w-4xl px-6 py-14 md:py-16">
+      <TripDetails trip={trip} />
+    </div>
+  );
 }

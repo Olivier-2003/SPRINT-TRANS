@@ -13,5 +13,9 @@ export default async function BusDetailPage({
   const bus = await getPublicBus(busId);
   if (!bus) notFound();
 
-  return <BusDetails bus={bus} />;
+  return (
+    <div className="mx-auto w-full max-w-4xl px-6 py-14 md:py-16">
+      <BusDetails bus={bus} />
+    </div>
+  );
 }
