@@ -31,13 +31,3 @@ export function getPublicLines() {
     orderBy: { name: "asc" },
   });
 }
-
-export function getPublicLine(id: string) {
-  return db.regularLine.findFirst({
-    where: { id, active: true },
-    include: {
-      stops: { orderBy: { sortOrder: "asc" } },
-      schedules: { orderBy: { validFrom: "asc" } },
-    },
-  });
-}
