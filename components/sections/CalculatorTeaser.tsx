@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Calculator, MapPin, Navigation, CalendarDays, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,62 +36,89 @@ export function CalculatorTeaser() {
       <ScrollReveal>
         <form
           onSubmit={onSubmit}
-          className="grid gap-5 rounded-3xl bg-card p-7 text-card-foreground shadow-[0_30px_60px_-20px_rgba(8,15,35,0.35)] ring-1 ring-foreground/10 sm:p-8 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] lg:items-end lg:gap-5"
+          className="relative grid gap-6 overflow-hidden rounded-[28px] bg-card p-8 text-card-foreground shadow-[0_50px_100px_-28px_rgba(8,15,35,0.55)] ring-1 ring-foreground/10 sm:p-10 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] lg:items-end lg:gap-5"
         >
-          <p className="text-sm font-semibold tracking-[0.2em] text-primary uppercase lg:col-span-5">
-            Kalkulator przejazdu
-          </p>
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-primary via-primary/70 to-primary/30"
+          />
+          <div className="flex items-center gap-4 lg:col-span-5">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+              <Calculator className="size-6" />
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <p className="text-sm font-semibold tracking-[0.2em] text-primary uppercase">Kalkulator przejazdu</p>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Sprawdź orientacyjną cenę w 30 sekund</h2>
+            </div>
+          </div>
+          <div className="h-px bg-border lg:col-span-5" />
           <div className="flex flex-col gap-2">
             <Label htmlFor="teaser-origin" className="text-sm">
               Skąd?
             </Label>
-            <Input
-              id="teaser-origin"
-              placeholder="Miejscowość wyjazdu"
-              value={origin}
-              onChange={(e) => setOrigin(e.target.value)}
-              className="h-12 text-base"
-            />
+            <div className="relative">
+              <Navigation className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="teaser-origin"
+                placeholder="Miejscowość wyjazdu"
+                value={origin}
+                onChange={(e) => setOrigin(e.target.value)}
+                className="h-12 pl-10 text-base"
+              />
+            </div>
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="teaser-destination" className="text-sm">
               Dokąd?
             </Label>
-            <Input
-              id="teaser-destination"
-              placeholder="Miejscowość docelowa"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              className="h-12 text-base"
-            />
+            <div className="relative">
+              <MapPin className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="teaser-destination"
+                placeholder="Miejscowość docelowa"
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+                className="h-12 pl-10 text-base"
+              />
+            </div>
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="teaser-date" className="text-sm">
               Data wyjazdu
             </Label>
-            <Input
-              id="teaser-date"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="h-12 text-base"
-            />
+            <div className="relative">
+              <CalendarDays className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="teaser-date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="h-12 pl-10 text-base"
+              />
+            </div>
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="teaser-passengers" className="text-sm">
               Liczba osób
             </Label>
-            <Input
-              id="teaser-passengers"
-              type="number"
-              min={1}
-              placeholder="np. 40"
-              value={passengers}
-              onChange={(e) => setPassengers(e.target.value)}
-              className="h-12 text-base"
-            />
+            <div className="relative">
+              <Users className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="teaser-passengers"
+                type="number"
+                min={1}
+                placeholder="np. 40"
+                value={passengers}
+                onChange={(e) => setPassengers(e.target.value)}
+                className="h-12 pl-10 text-base"
+              />
+            </div>
           </div>
-          <Button type="submit" size="lg" className="h-12 gap-1.5 rounded-full px-7 text-base lg:w-fit">
+          <Button
+            type="submit"
+            size="lg"
+            className="h-12 gap-1.5 rounded-full px-8 text-base shadow-[0_18px_35px_-12px_rgba(37,99,235,0.55)] lg:w-fit"
+          >
             Oblicz cenę
             <ArrowRight />
           </Button>

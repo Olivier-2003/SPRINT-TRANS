@@ -1,16 +1,12 @@
 /**
  * Pojedynczy punkt konfiguracji zasobów wizualnych hero strony głównej.
- * Podmiana na docelowe materiały SPRINT-TRANS = wpisanie ścieżek do plików
- * (np. w `public/hero/`) poniżej — bez żadnych zmian w komponencie HeroSection.
- * Dopóki pola pozostają `undefined`, hero renderuje dopracowany placeholder
- * (ilustrowane tło + SVG autobusu) w docelowej pozycji/skali/warstwach.
+ * Docelowe pliki: `public/hero/hero-bg.jpg` (pełnoekranowe kinowe tło drogi)
+ * i `public/hero/hero-bus.png` (duże zdjęcie autokaru na przezroczystym tle).
+ * Wystarczy wrzucić plik pod dokładnie tą ścieżką — `HeroSection` sam wykrywa
+ * jego obecność (patrz `lib/public-assets.ts`) i przełącza się z ilustrowanego
+ * placeholdera na docelowy materiał, bez żadnych zmian w kodzie.
  */
-export const HERO_ASSETS: {
-  /** Docelowe zdjęcie tła (droga/góry, szerokie, ciemne/kinowe ujęcie). */
-  backdropSrc?: string;
-  /** Docelowe wycięte zdjęcie autokaru SPRINT-TRANS (przezroczyste tło, PNG/WebP). */
-  busSrc?: string;
-} = {
-  backdropSrc: undefined,
-  busSrc: undefined,
-};
+export const HERO_ASSETS = {
+  backdropPath: "hero/hero-bg.jpg",
+  busPath: "hero/hero-bus.png",
+} as const;

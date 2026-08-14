@@ -5,24 +5,29 @@ import { ScrollBus } from "@/components/animations/ScrollBus";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { CinematicRoadBackdrop } from "@/components/animations/CinematicRoadBackdrop";
 import { HERO_ASSETS } from "@/components/sections/hero-assets";
+import { publicAssetExists } from "@/lib/public-assets";
 
 /**
- * Hero strony głównej. Tło i zdjęcie autobusu to na razie placeholdery — gotowe
- * do podmiany na docelowe zdjęcie floty SPRINT-TRANS bez zmiany layoutu, wyłącznie
- * przez uzupełnienie `HERO_ASSETS` w `hero-assets.ts` (patrz też komentarze przy
- * warstwie tła i ScrollBus poniżej).
+ * Hero strony głównej. Tło i zdjęcie autobusu docelowo pochodzą z
+ * `public/hero/hero-bg.jpg` i `public/hero/hero-bus.png` (patrz `hero-assets.ts`).
+ * Dopóki tych plików nie ma w repo, renderowany jest dopracowany, ilustrowany
+ * placeholder w docelowej kompozycji/skali — layout nie wymaga żadnych zmian
+ * po podmianie plików.
  */
 export function HeroSection() {
+  const hasBackdrop = publicAssetExists(HERO_ASSETS.backdropPath);
+  const hasBus = publicAssetExists(HERO_ASSETS.busPath);
+
   return (
     <section className="relative overflow-hidden bg-brand-navy pt-24 pb-48 text-white sm:pt-28 sm:pb-56 lg:pt-32 lg:pb-64">
-      {/* Warstwa tła — docelowe kinowe zdjęcie drogi/gór (gdy `HERO_ASSETS.backdropSrc`
-          jest ustawione) albo ilustrowany placeholder o tej samej kompozycji. Leży
-          NAJNIŻEJ (z-0), pod wszystkimi warstwami gradientu/winiety poniżej — dzięki
-          temu tekst po lewej pozostaje czytelny niezależnie od jasności zdjęcia. */}
-      {HERO_ASSETS.backdropSrc ? (
+      {/* Warstwa tła — docelowe kinowe zdjęcie drogi (public/hero/hero-bg.jpg) albo
+          ilustrowany placeholder o tej samej kompozycji. Leży NAJNIŻEJ (z-0), pod
+          wszystkimi warstwami gradientu/winiety poniżej — dzięki temu tekst po lewej
+          pozostaje czytelny niezależnie od jasności zdjęcia. */}
+      {hasBackdrop ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={HERO_ASSETS.backdropSrc}
+          src={`/${HERO_ASSETS.backdropPath}`}
           alt=""
           aria-hidden="true"
           className="absolute inset-0 h-full w-full object-cover"
@@ -30,44 +35,53 @@ export function HeroSection() {
       ) : (
         <CinematicRoadBackdrop className="absolute inset-0 h-full w-full" />
       )}
+      {/* Głęboki, kinowy navy — baza koloru niezależnie od tła. Świadomie
+          PÓŁPRZEZROCZYSTA (color-mix z "transparent", nie z "black") — to
+          wcześniej był bug: te same stopnie mieszane z "black" dawały w 100%
+          nieprzezroczystą warstwę, która całkowicie zasłaniała zdjęcie tła
+          niezależnie od tego, jak jasne/nasycone by ono nie było. Wartości
+          opacity dodatkowo obniżone (były 0.65/0.28/0.55/0.40/0.55), bo przy
+          starych poziomach ta warstwa razem z winietą i warstwą kontrastu
+          zjadała nawet ~90% jasności zdjęcia tła. */}
       <div
         aria-hidden="true"
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(60% 70% at 88% 10%, color-mix(in oklch, var(--color-primary), transparent 25%), transparent), radial-gradient(50% 60% at 78% 55%, color-mix(in oklch, var(--color-primary), transparent 55%), transparent), radial-gradient(45% 45% at 10% 90%, color-mix(in oklch, var(--color-primary), transparent 70%), transparent), radial-gradient(90% 70% at 50% 105%, color-mix(in oklch, var(--color-brand-navy-card), transparent 10%), transparent), linear-gradient(160deg, color-mix(in oklch, var(--color-brand-navy), black 15%) 0%, var(--color-brand-navy) 55%, color-mix(in oklch, var(--color-brand-navy-card), black 10%) 100%)",
+            "radial-gradient(65% 75% at 90% 15%, color-mix(in oklch, var(--color-primary), transparent 78%), transparent), radial-gradient(50% 55% at 15% 90%, color-mix(in oklch, var(--color-primary), transparent 88%), transparent), linear-gradient(155deg, color-mix(in oklch, var(--color-brand-navy), transparent 80%) 0%, color-mix(in oklch, var(--color-brand-navy), transparent 88%) 50%, color-mix(in oklch, var(--color-brand-navy-card), transparent 80%) 100%)",
         }}
       />
-      {/* Delikatna siatka — sugeruje drogę/asfalt, wzmacnia „premium” charakter tła. */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 opacity-[0.06]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
-        }}
-      />
-      {/* Winieta krawędzi — pogłębia tło, wzmacnia fokus na treści i autobusie. */}
+      {/* Winieta krawędzi — pogłębia tło w rogach (kinowy efekt), ale już nie
+          w pełni nieprzezroczysta (była: color-mix z "black" bez żadnego
+          alpha = twarda, nieprzezroczysta krawędź). Zagnieżdżony color-mix
+          dokłada przezroczystość na wierzch przyciemnienia. */}
       <div
         aria-hidden="true"
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(120% 90% at 50% 50%, transparent 55%, color-mix(in oklch, var(--color-brand-navy), black 35%) 100%)",
+            "radial-gradient(125% 95% at 50% 45%, transparent 55%, color-mix(in oklch, color-mix(in oklch, var(--color-brand-navy), black 45%), transparent 45%) 100%)",
         }}
       />
-      {/* Warstwa kontrastu — gwarantuje czytelność tekstu niezależnie od przyszłego zdjęcia. */}
+      {/* Warstwa kontrastu — chroni czytelność tekstu, ale TYLKO po lewej
+          stronie (strefa tekstu). Wcześniej opadała liniowo do 20% na samej
+          prawej krawędzi (efektywnie wciąż prawie nieprzezroczysta za
+          autobusem/tłem) — teraz kończy się blisko przezroczystości już
+          w okolicach ~65% szerokości, więc tło po prawej jest w pełni widoczne. */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 z-[1] bg-gradient-to-r from-brand-navy via-brand-navy/80 to-brand-navy/15"
+        className="absolute inset-0 z-[1]"
+        style={{
+          background:
+            "linear-gradient(to right, var(--color-brand-navy) 0%, color-mix(in oklch, var(--color-brand-navy), transparent 10%) 30%, color-mix(in oklch, var(--color-brand-navy), transparent 55%) 50%, color-mix(in oklch, var(--color-brand-navy), transparent 92%) 65%, transparent 100%)",
+        }}
       />
       <div
         aria-hidden="true"
         className="absolute inset-x-0 bottom-24 z-[1] h-px bg-gradient-to-r from-transparent via-white/25 to-transparent"
       />
 
-      <div className="relative z-10 mx-auto grid max-w-7xl gap-14 px-6 lg:grid-cols-[0.95fr_1.15fr] lg:items-center lg:gap-8 lg:px-8">
+      <div className="relative z-10 mx-auto grid max-w-7xl gap-14 px-6 lg:grid-cols-[0.9fr_1.2fr] lg:items-center lg:gap-8 lg:px-8">
         <ScrollReveal delay={150} className="flex max-w-2xl flex-col gap-6">
           <span className="w-fit rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold tracking-[0.2em] text-white/80 uppercase ring-1 ring-white/15">
             U nas jeździ się
@@ -100,29 +114,31 @@ export function HeroSection() {
           </div>
         </ScrollReveal>
 
-        <ScrollReveal delay={300} direction="right" className="relative lg:-mr-6 lg:w-[112%] lg:justify-self-end">
-          {/* Miejsce docelowe pod zdjęcie autokaru SPRINT-TRANS — wyraźnie
-              wydzielona "scena" (reflektor z góry, poświata i platforma pod
-              kołami) z placeholderem SVG reagującym na scroll. Rozmiar i pozycja
-              celowo bliskie docelowej kompozycji (autobus "bleeduje" poza kolumnę
-              treści), gotowe na podmianę na finalną fotografię przez `HERO_ASSETS.busSrc`. */}
+        <ScrollReveal delay={300} direction="right" className="relative lg:-mr-10 lg:w-[122%] lg:justify-self-end">
+          {/* Miejsce docelowe pod zdjęcie autokaru SPRINT-TRANS — duża "scena"
+              (ambientowa poświata + cień pod kołami) z placeholderem SVG reagującym
+              na scroll. Kolumna celowo "wylewa się" poza siatkę treści (bleed w prawo),
+              tak by po podmianie na `public/hero/hero-bus.png` autobus wizualnie
+              dominował prawą połowę hero, tak jak w referencji. */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 scale-150 rounded-full opacity-90"
+            className="absolute inset-0 scale-125 rounded-full opacity-70"
             style={{
-              background: "radial-gradient(closest-side, color-mix(in oklch, var(--color-primary), transparent 45%), transparent)",
-            }}
-          />
-          <div
-            aria-hidden="true"
-            className="absolute -top-16 left-1/2 h-56 w-72 -translate-x-1/2 opacity-70 sm:w-96"
-            style={{
-              background: "conic-gradient(from 180deg at 50% 0%, transparent, white 8%, transparent 16%)",
-              filter: "blur(2px)",
+              background:
+                "radial-gradient(closest-side, color-mix(in oklch, var(--color-primary), transparent 60%), transparent)",
             }}
           />
           <div className="relative mx-auto aspect-4/3 w-full max-w-2xl lg:max-w-none">
-            <ScrollBus src={HERO_ASSETS.busSrc} className="absolute inset-0" />
+            {hasBus ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={`/${HERO_ASSETS.busPath}`}
+                alt="Autokar SPRINT-TRANS"
+                className="absolute inset-0 h-full w-full object-contain drop-shadow-2xl"
+              />
+            ) : (
+              <ScrollBus className="absolute inset-0" />
+            )}
             <div
               aria-hidden="true"
               className="absolute inset-x-6 bottom-6 h-5 rounded-full bg-black/50 blur-xl sm:inset-x-10"

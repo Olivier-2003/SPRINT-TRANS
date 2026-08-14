@@ -134,7 +134,7 @@ export function GlobalScrollBus({ src, className }: GlobalScrollBusProps) {
     <div
       aria-hidden="true"
       className={cn(
-        "pointer-events-none fixed z-0 hidden w-28 -translate-x-1/2 -translate-y-1/2 select-none xl:block",
+        "pointer-events-none fixed z-0 hidden w-20 -translate-x-1/2 -translate-y-1/2 opacity-70 select-none xl:block",
         className
       )}
       style={{
@@ -157,19 +157,31 @@ export function GlobalScrollBus({ src, className }: GlobalScrollBusProps) {
   );
 }
 
+/**
+ * Placeholder — mały, stonowany zarys autobusu (bez jaskrawego koloru marki),
+ * żeby czytać się jako dyskretny, dekoracyjny akcent, a nie kreskówkowa maskotka.
+ * Docelowo podmieniany jednym plikiem, patrz `global-bus-asset.ts`.
+ */
 function MiniBusPlaceholderSvg() {
   return (
-    <svg viewBox="0 0 120 56" className="h-full w-full opacity-90 drop-shadow-xl" xmlns="http://www.w3.org/2000/svg">
-      <rect x="6" y="14" width="96" height="30" rx="8" fill="var(--color-primary, #2563eb)" stroke="white" strokeWidth="2" />
-      <rect x="6" y="14" width="96" height="11" rx="8" fill="white" opacity="0.25" />
-      <rect x="14" y="27" width="14" height="10" rx="2" fill="white" opacity="0.85" />
-      <rect x="32" y="27" width="14" height="10" rx="2" fill="white" opacity="0.85" />
-      <rect x="50" y="27" width="14" height="10" rx="2" fill="white" opacity="0.85" />
-      <rect x="68" y="27" width="14" height="10" rx="2" fill="white" opacity="0.7" />
-      <circle cx="26" cy="46" r="7" fill="#0d1b2e" />
-      <circle cx="26" cy="46" r="3" fill="white" opacity="0.6" />
-      <circle cx="82" cy="46" r="7" fill="#0d1b2e" />
-      <circle cx="82" cy="46" r="3" fill="white" opacity="0.6" />
+    <svg viewBox="0 0 120 56" className="h-full w-full opacity-80 drop-shadow-lg" xmlns="http://www.w3.org/2000/svg">
+      <rect
+        x="6"
+        y="14"
+        width="96"
+        height="30"
+        rx="8"
+        fill="var(--color-brand-navy, #0d1b2e)"
+        fillOpacity="0.85"
+        stroke="white"
+        strokeOpacity="0.55"
+        strokeWidth="1.5"
+      />
+      <rect x="14" y="20" width="80" height="12" rx="3" fill="white" opacity="0.22" />
+      <circle cx="26" cy="46" r="6" fill="#0d1b2e" />
+      <circle cx="26" cy="46" r="2.5" fill="white" opacity="0.5" />
+      <circle cx="82" cy="46" r="6" fill="#0d1b2e" />
+      <circle cx="82" cy="46" r="2.5" fill="white" opacity="0.5" />
     </svg>
   );
 }

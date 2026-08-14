@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/utils";
+import { PremiumBusIllustration } from "@/components/animations/PremiumBusIllustration";
 
 interface ScrollBusProps {
   /** Opcjonalna ścieżka do prawdziwego zdjęcia autobusu — gdy brak, renderuje placeholder SVG. */
@@ -60,31 +61,8 @@ export function ScrollBus({ src, className }: ScrollBusProps) {
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt="" className="h-full w-full object-contain drop-shadow-2xl" />
       ) : (
-        <BusPlaceholderSvg />
+        <PremiumBusIllustration className="h-full w-full drop-shadow-2xl" />
       )}
     </div>
-  );
-}
-
-function BusPlaceholderSvg() {
-  return (
-    <svg viewBox="0 0 400 180" className="h-full w-full drop-shadow-2xl" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="200" cy="168" rx="170" ry="8" fill="black" opacity="0.25" />
-      <rect x="20" y="40" width="330" height="90" rx="18" fill="var(--color-brand-navy-card, #1e3a5f)" stroke="var(--color-primary, #2563eb)" strokeWidth="3" />
-      <rect x="20" y="40" width="330" height="34" rx="18" fill="var(--color-primary, #2563eb)" opacity="0.9" />
-      <rect x="40" y="80" width="46" height="30" rx="4" fill="#bcd4f0" opacity="0.85" />
-      <rect x="96" y="80" width="46" height="30" rx="4" fill="#bcd4f0" opacity="0.85" />
-      <rect x="152" y="80" width="46" height="30" rx="4" fill="#bcd4f0" opacity="0.85" />
-      <rect x="208" y="80" width="46" height="30" rx="4" fill="#bcd4f0" opacity="0.85" />
-      <rect x="264" y="80" width="46" height="30" rx="4" fill="#bcd4f0" opacity="0.7" />
-      <rect x="316" y="60" width="26" height="56" rx="6" fill="#0d1b2e" />
-      <circle cx="90" cy="132" r="20" fill="#0d1b2e" />
-      <circle cx="90" cy="132" r="9" fill="#5b7a99" />
-      <circle cx="290" cy="132" r="20" fill="#0d1b2e" />
-      <circle cx="290" cy="132" r="9" fill="#5b7a99" />
-      <text x="35" y="105" fill="white" fontFamily="sans-serif" fontWeight="700" fontSize="14" opacity="0.9">
-        SPRINT-TRANS
-      </text>
-    </svg>
   );
 }

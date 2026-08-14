@@ -28,9 +28,9 @@ const OFFER_ITEMS = [
 
 export function OfferBand() {
   return (
-    <section className="relative bg-brand-navy py-16 text-white md:py-24">
+    <section className="relative bg-brand-navy py-14 text-white md:py-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <ScrollReveal className="mb-12 flex flex-wrap items-end justify-between gap-6">
+        <ScrollReveal className="mb-10 flex flex-wrap items-end justify-between gap-6">
           <div>
             <span className="text-sm font-semibold tracking-[0.2em] text-brand-navy-muted uppercase">
               Nasza oferta
@@ -51,18 +51,18 @@ export function OfferBand() {
           </Button>
         </ScrollReveal>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-white/10">
           {OFFER_ITEMS.map((item, i) => (
             <ScrollReveal
               key={item.title}
               delay={i * 90}
-              className="group flex flex-col gap-4 rounded-2xl p-2 transition-colors duration-300 hover:bg-white/5"
+              className="group flex flex-col gap-5 px-1 transition-opacity duration-300 lg:px-7 lg:first:pl-0"
             >
-              <div className="flex size-16 items-center justify-center rounded-2xl bg-white/10 text-white transition-colors duration-300 group-hover:bg-primary">
-                <item.icon className="size-7" />
+              <div className="flex size-20 items-center justify-center rounded-2xl bg-white/10 text-white transition-colors duration-300 group-hover:bg-primary">
+                <item.icon className="size-9" />
               </div>
               <h3 className="text-xl font-semibold tracking-tight">{item.title}</h3>
-              <p className="max-w-xs text-base leading-relaxed text-brand-navy-muted">{item.description}</p>
+              <p className="text-base leading-relaxed text-brand-navy-muted">{item.description}</p>
             </ScrollReveal>
           ))}
         </div>
