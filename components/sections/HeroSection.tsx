@@ -8,33 +8,43 @@ import { HERO_ASSETS } from "@/components/sections/hero-assets";
 import { publicAssetExists } from "@/lib/public-assets";
 
 /**
- * Hero strony głównej. Tło i zdjęcie autobusu docelowo pochodzą z
- * `public/hero/hero-bg.jpg` i `public/hero/hero-bus.png` (patrz `hero-assets.ts`).
- * Dopóki tych plików nie ma w repo, renderowany jest dopracowany, ilustrowany
- * placeholder w docelowej kompozycji/skali — layout nie wymaga żadnych zmian
- * po podmianie plików.
+ * Hero strony głównej. Docelowe tło pochodzi z `public/hero/hero-bg.jpg`
+ * (patrz `hero-assets.ts`) — to jedna spójna fotografia, która ma już
+ * autobus w kadrze. Dopóki tego pliku nie ma w repo, renderowany jest
+ * dopracowany, ilustrowany placeholder (droga + osobny SVG autobusu w
+ * prawej kolumnie) w docelowej kompozycji/skali. Gdy prawdziwe zdjęcie
+ * jest obecne, prawa kolumna z placeholderowym autobusem NIE renderuje
+ * się w ogóle — dublowałaby się z autobusem już widocznym na zdjęciu.
  */
 export function HeroSection() {
   const hasBackdrop = publicAssetExists(HERO_ASSETS.backdropPath);
-  const hasBus = publicAssetExists(HERO_ASSETS.busPath);
 
   return (
     <section className="relative overflow-hidden bg-brand-navy pt-24 pb-48 text-white sm:pt-28 sm:pb-56 lg:pt-32 lg:pb-64">
       {/* Warstwa tła — docelowe kinowe zdjęcie drogi (public/hero/hero-bg.jpg) albo
           ilustrowany placeholder o tej samej kompozycji. Leży NAJNIŻEJ (z-0), pod
           wszystkimi warstwami gradientu/winiety poniżej — dzięki temu tekst po lewej
-          pozostaje czytelny niezależnie od jasności zdjęcia. */}
-      {hasBackdrop ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={`/${HERO_ASSETS.backdropPath}`}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-      ) : (
-        <CinematicRoadBackdrop className="absolute inset-0 h-full w-full" />
-      )}
+          pozostaje czytelny niezależnie od jasności zdjęcia.
+          Ograniczona do max-w-[1920px] i wyśrodkowana — celowo SZERSZA niż kontener
+          treści (max-w-[1600px]), żeby na typowych ekranach (do ~1920px) zdjęcie
+          nadal wypełniało całą widoczną szerokość tak jak wcześniej. Dopiero na
+          bardzo szerokich ekranach (2560px+, ultrawide) zdjęcie (1916×821, ~2.33:1)
+          przestaje się rozciągać/przycinać przez object-cover i zostaje "oprawione"
+          w centrum. Poza tą szerokością widoczny jest sam bg-brand-navy sekcji razem
+          z gradientami poniżej (które i tak są już pełnej szerokości) — jednolity
+          granat zamiast rozlanego na całą szerokość okna zdjęcia. */}
+      <div aria-hidden="true" className="absolute inset-0 mx-auto max-w-[1920px]">
+        {hasBackdrop ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={`/${HERO_ASSETS.backdropPath}`}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <CinematicRoadBackdrop className="absolute inset-0 h-full w-full" />
+        )}
+      </div>
       {/* Głęboki, kinowy navy — baza koloru niezależnie od tła. Świadomie
           PÓŁPRZEZROCZYSTA (color-mix z "transparent", nie z "black") — to
           wcześniej był bug: te same stopnie mieszane z "black" dawały w 100%
@@ -81,7 +91,7 @@ export function HeroSection() {
         className="absolute inset-x-0 bottom-24 z-[1] h-px bg-gradient-to-r from-transparent via-white/25 to-transparent"
       />
 
-      <div className="relative z-10 mx-auto grid max-w-7xl gap-14 px-6 lg:grid-cols-[0.9fr_1.2fr] lg:items-center lg:gap-8 lg:px-8">
+      <div className="relative z-10 mx-auto grid max-w-[1600px] gap-14 px-6 lg:grid-cols-[0.9fr_1.2fr] lg:items-center lg:gap-8 lg:px-8">
         <ScrollReveal delay={150} className="flex max-w-2xl flex-col gap-6">
           <span className="w-fit rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold tracking-[0.2em] text-white/80 uppercase ring-1 ring-white/15">
             U nas jeździ się
@@ -114,37 +124,30 @@ export function HeroSection() {
           </div>
         </ScrollReveal>
 
-        <ScrollReveal delay={300} direction="right" className="relative lg:-mr-10 lg:w-[122%] lg:justify-self-end">
-          {/* Miejsce docelowe pod zdjęcie autokaru SPRINT-TRANS — duża "scena"
-              (ambientowa poświata + cień pod kołami) z placeholderem SVG reagującym
-              na scroll. Kolumna celowo "wylewa się" poza siatkę treści (bleed w prawo),
-              tak by po podmianie na `public/hero/hero-bus.png` autobus wizualnie
-              dominował prawą połowę hero, tak jak w referencji. */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 scale-125 rounded-full opacity-70"
-            style={{
-              background:
-                "radial-gradient(closest-side, color-mix(in oklch, var(--color-primary), transparent 60%), transparent)",
-            }}
-          />
-          <div className="relative mx-auto aspect-4/3 w-full max-w-2xl lg:max-w-none">
-            {hasBus ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={`/${HERO_ASSETS.busPath}`}
-                alt="Autokar SPRINT-TRANS"
-                className="absolute inset-0 h-full w-full object-contain drop-shadow-2xl"
-              />
-            ) : (
-              <ScrollBus className="absolute inset-0" />
-            )}
+        {!hasBackdrop && (
+          <ScrollReveal delay={300} direction="right" className="relative lg:-mr-10 lg:w-[122%] lg:justify-self-end">
+            {/* Miejsce docelowe pod placeholder SVG autobusu — duża "scena"
+                (ambientowa poświata + cień pod kołami). Renderuje się WYŁĄCZNIE
+                w trybie placeholder (brak `hero-bg.jpg`). Gdy prawdziwe zdjęcie
+                tła jest obecne, ono samo zawiera już autobus w kadrze — osobna
+                prawa kolumna zniknęła, żeby się z nim nie dublować. */}
             <div
               aria-hidden="true"
-              className="absolute inset-x-6 bottom-6 h-5 rounded-full bg-black/50 blur-xl sm:inset-x-10"
+              className="absolute inset-0 scale-125 rounded-full opacity-70"
+              style={{
+                background:
+                  "radial-gradient(closest-side, color-mix(in oklch, var(--color-primary), transparent 60%), transparent)",
+              }}
             />
-          </div>
-        </ScrollReveal>
+            <div className="relative mx-auto aspect-4/3 w-full max-w-2xl lg:max-w-none">
+              <ScrollBus className="absolute inset-0" />
+              <div
+                aria-hidden="true"
+                className="absolute inset-x-6 bottom-6 h-5 rounded-full bg-black/50 blur-xl sm:inset-x-10"
+              />
+            </div>
+          </ScrollReveal>
+        )}
       </div>
     </section>
   );

@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { MapPin, Phone, Mail, FileText } from "lucide-react";
+import { MapPin, Phone, Mail, FileText, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AnimatedLogo } from "@/components/animations/AnimatedLogo";
+
+const FACEBOOK_URL = "https://www.facebook.com/sprinttranspiechcin";
 
 const QUICK_LINKS = [
   { label: "Oferta", href: "/oferta" },
@@ -16,7 +18,7 @@ export function Footer() {
 
   return (
     <footer className="relative border-t border-brand-navy-border bg-brand-navy text-brand-navy-muted">
-      <div className="mx-auto grid max-w-7xl gap-x-10 gap-y-12 px-6 py-16 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-8 lg:px-8">
+      <div className="mx-auto grid max-w-[1600px] gap-x-10 gap-y-12 px-6 py-16 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-8 lg:px-8">
         <div className="flex flex-col gap-5 sm:col-span-2 lg:col-span-1">
           <AnimatedLogo className="h-9" />
           <p className="max-w-xs text-base leading-relaxed">
@@ -78,9 +80,9 @@ export function Footer() {
       </div>
 
       <div className="border-t border-brand-navy-border">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-5 text-sm lg:px-8">
+        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3 px-6 py-5 text-sm lg:px-8">
           <p>© {year} SPRINT-TRANS. Wszelkie prawa zastrzeżone.</p>
-          <nav className="flex flex-wrap gap-x-5 gap-y-1.5">
+          <nav className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
             <Link href="/polityka-prywatnosci" className="hover:text-white">
               Polityka prywatności
             </Link>
@@ -89,6 +91,15 @@ export function Footer() {
             </Link>
             <Link href="/admin/login" className="hover:text-white">
               Panel administracyjny
+            </Link>
+            <Link
+              href={FACEBOOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 hover:text-white"
+            >
+              Facebook
+              <ArrowUpRight className="size-3.5" />
             </Link>
           </nav>
         </div>

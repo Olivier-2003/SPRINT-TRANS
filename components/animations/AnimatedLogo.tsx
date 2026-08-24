@@ -24,7 +24,7 @@ export function AnimatedLogo({ className, tone = "light" }: AnimatedLogoProps) {
 
   return (
     <svg
-      viewBox="0 0 220 56"
+      viewBox="0 0 262 56"
       className={cn("h-8 w-auto overflow-visible", className)}
       xmlns="http://www.w3.org/2000/svg"
       role="img"
@@ -49,11 +49,11 @@ export function AnimatedLogo({ className, tone = "light" }: AnimatedLogoProps) {
       />
       <text
         x="52"
-        y="35"
+        y="36"
         fontFamily="var(--font-geist-sans), sans-serif"
         fontWeight={700}
-        fontSize="22"
-        letterSpacing="0.5"
+        fontSize="27"
+        letterSpacing="0.3"
         fill={fill}
         className={reduced ? undefined : "logo-fill"}
       >

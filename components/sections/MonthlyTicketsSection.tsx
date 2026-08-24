@@ -34,7 +34,7 @@ const TICKET_ITEMS = [
 export function MonthlyTicketsSection() {
   return (
     <section id="bilety-miesieczne" className="relative bg-brand-navy py-16 text-white md:py-24">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className="mx-auto max-w-[1600px] px-6 lg:px-8">
         <ScrollReveal className="mb-12 flex flex-col gap-3">
           <span className="text-sm font-semibold tracking-[0.2em] text-brand-navy-muted uppercase">
             Dojazdy regularne

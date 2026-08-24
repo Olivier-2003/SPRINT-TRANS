@@ -2,8 +2,8 @@
  * Dopracowana ilustracja autokaru (profil boczny) — cieniowana bryła, przyciemniane
  * szyby z odbiciem, oświetlenie, felgi ze światłocieniem. To wciąż ilustracja
  * wektorowa, nie fotografia — najbardziej premium wersja placeholdera, jaką da się
- * zbudować bez prawdziwego zdjęcia. Zastępowana w całości, gdy pojawi się plik pod
- * `HERO_ASSETS.busPath` (patrz `components/sections/hero-assets.ts`).
+ * zbudować bez prawdziwego zdjęcia. Renderowana wyłącznie w trybie placeholder hero
+ * (brak `public/hero/hero-bg.jpg` — patrz `components/sections/HeroSection.tsx`).
  */
 const MULLION_X = [95, 150, 205, 260, 315, 370];
 

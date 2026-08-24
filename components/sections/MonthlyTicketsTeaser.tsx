@@ -10,7 +10,7 @@ import { ScrollReveal } from "@/components/animations/ScrollReveal";
  */
 export function MonthlyTicketsTeaser() {
   return (
-    <section className="relative mx-auto my-2 max-w-7xl px-6 md:my-4 lg:px-8">
+    <section className="relative mx-auto my-2 max-w-[1600px] px-6 md:my-4 lg:px-8">
       <ScrollReveal>
         <Link
           href="/rozklad-jazdy#bilety-miesieczne"

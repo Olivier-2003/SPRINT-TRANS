@@ -1,26 +1,26 @@
+import { AboutHeroSection } from "@/components/sections/AboutHeroSection";
+import { ServiceOfferGrid } from "@/components/sections/ServiceOfferGrid";
+import { ScrollReveal } from "@/components/animations/ScrollReveal";
+import { ReferencesSection } from "@/components/sections/ReferencesSection";
+import { WhyTrustUsSection } from "@/components/sections/WhyTrustUsSection";
+import { ContactCta } from "@/components/sections/ContactCta";
+
 export default function AboutPage() {
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-14 md:py-16">
-      <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">O firmie</h1>
-      <p className="max-w-2xl text-muted-foreground">
-        SPRINT-TRANS zajmuje się przewozem osób autobusami — zarówno na liniach regularnych, jak i
-        w ramach wynajmu na wycieczki oraz inne przejazdy. [Docelowy opis firmy, historia i
-        doświadczenie zostaną uzupełnione przez SPRINT-TRANS.]
-      </p>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border p-5">
-          <p className="text-3xl font-semibold text-primary">—</p>
-          <p className="text-sm text-muted-foreground">lat doświadczenia (placeholder)</p>
-        </div>
-        <div className="rounded-2xl border p-5">
-          <p className="text-3xl font-semibold text-primary">—</p>
-          <p className="text-sm text-muted-foreground">autobusów we flocie (placeholder)</p>
-        </div>
-        <div className="rounded-2xl border p-5">
-          <p className="text-3xl font-semibold text-primary">—</p>
-          <p className="text-sm text-muted-foreground">obsłużonych przejazdów (placeholder)</p>
-        </div>
-      </div>
+    <div className="flex-1">
+      <AboutHeroSection />
+
+      <section className="relative mx-auto max-w-[1600px] px-6 py-14 md:py-20 lg:px-8">
+        <ScrollReveal className="mb-10 flex flex-col gap-3">
+          <span className="text-sm font-semibold tracking-[0.2em] text-primary uppercase">Co robimy</span>
+          <h2 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">Nasze usługi</h2>
+        </ScrollReveal>
+        <ServiceOfferGrid />
+      </section>
+
+      <ReferencesSection />
+      <WhyTrustUsSection />
+      <ContactCta />
     </div>
   );
 }

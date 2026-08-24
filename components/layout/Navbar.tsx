@@ -45,9 +45,9 @@ export function Navbar() {
           : "border-transparent bg-brand-navy"
       )}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 lg:px-8">
+      <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-6 py-3 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="SPRINT-TRANS — strona główna">
-          <AnimatedLogo className="h-10" />
+          <AnimatedLogo className="h-14" />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">

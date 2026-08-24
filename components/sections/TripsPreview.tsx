@@ -21,7 +21,7 @@ export function TripsPreview({ trips }: { trips: TripWithPhotos[] }) {
         : "grid-cols-[minmax(0,400px)] justify-start";
 
   return (
-    <section className="relative mx-auto max-w-7xl px-6 pt-14 pb-10 md:pt-20 md:pb-14 lg:px-8">
+    <section className="relative mx-auto max-w-[1600px] px-6 pt-14 pb-10 md:pt-20 md:pb-14 lg:px-8">
       <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
         <ScrollReveal className="flex flex-col gap-3">
           <span className="text-sm font-semibold tracking-[0.2em] text-primary uppercase">

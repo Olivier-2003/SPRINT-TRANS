@@ -32,7 +32,7 @@ export function CalculatorTeaser() {
   };
 
   return (
-    <div className="relative z-10 mx-auto -mt-28 max-w-7xl px-6 sm:-mt-32 lg:px-8">
+    <div className="relative z-10 mx-auto -mt-28 max-w-[1600px] px-6 sm:-mt-32 lg:px-8">
       <ScrollReveal>
         <form
           onSubmit={onSubmit}
