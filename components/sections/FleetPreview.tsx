@@ -116,7 +116,7 @@ export function FleetPreview({ buses }: { buses: BusWithPhotos[] }) {
           nativeButton={false}
           variant="outline"
           size="lg"
-          className="gap-1.5 rounded-full px-6 text-base"
+          className="h-11 gap-1.5 rounded-full px-6 text-base"
         >
           Zobacz całą flotę
           <ArrowRight />

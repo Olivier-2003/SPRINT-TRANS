@@ -21,7 +21,7 @@ export function FacebookCta() {
             render={<Link href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" />}
             nativeButton={false}
             size="lg"
-            className="gap-1.5 rounded-full px-7 text-base"
+            className="h-11 gap-1.5 rounded-full px-7 text-base"
           >
             Facebook
             <ArrowUpRight />

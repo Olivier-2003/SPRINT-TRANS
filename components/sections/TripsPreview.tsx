@@ -36,7 +36,7 @@ export function TripsPreview({ trips }: { trips: TripWithPhotos[] }) {
           nativeButton={false}
           variant="outline"
           size="lg"
-          className="hidden gap-1.5 rounded-full px-6 text-base lg:inline-flex"
+          className="hidden h-11 gap-1.5 rounded-full px-6 text-base lg:inline-flex"
         >
           Zobacz wszystkie wycieczki
           <ChevronRight />
@@ -83,7 +83,7 @@ export function TripsPreview({ trips }: { trips: TripWithPhotos[] }) {
           nativeButton={false}
           variant="outline"
           size="lg"
-          className="gap-1.5 rounded-full px-6 text-base"
+          className="h-11 gap-1.5 rounded-full px-6 text-base"
         >
           Zobacz wszystkie wycieczki
           <ArrowRight />

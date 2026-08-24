@@ -20,7 +20,7 @@ export function HeroSection() {
   const hasBackdrop = publicAssetExists(HERO_ASSETS.backdropPath);
 
   return (
-    <section className="relative overflow-hidden bg-brand-navy pt-24 pb-48 text-white sm:pt-28 sm:pb-56 lg:pt-32 lg:pb-64">
+    <section className="relative overflow-hidden bg-brand-navy pt-16 pb-40 text-white sm:pt-24 sm:pb-48 md:pt-28 md:pb-56 lg:pt-32 lg:pb-64">
       {/* Warstwa tła — docelowe kinowe zdjęcie drogi (public/hero/hero-bg.jpg) albo
           ilustrowany placeholder o tej samej kompozycji. Leży NAJNIŻEJ (z-0), pod
           wszystkimi warstwami gradientu/winiety poniżej — dzięki temu tekst po lewej
@@ -39,7 +39,7 @@ export function HeroSection() {
           <img
             src={`/${HERO_ASSETS.backdropPath}`}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover object-[72%_50%] sm:object-center"
           />
         ) : (
           <CinematicRoadBackdrop className="absolute inset-0 h-full w-full" />
@@ -96,7 +96,7 @@ export function HeroSection() {
           <span className="w-fit rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold tracking-[0.2em] text-white/80 uppercase ring-1 ring-white/15">
             U nas jeździ się
           </span>
-          <h1 className="text-7xl leading-[0.95] font-extrabold tracking-tight sm:text-8xl md:text-9xl">
+          <h1 className="text-6xl leading-[0.95] font-extrabold tracking-tight sm:text-7xl md:text-8xl lg:text-9xl">
             SPRINTEM
           </h1>
           <p className="max-w-lg text-xl text-brand-navy-muted sm:text-2xl">

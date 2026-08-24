@@ -42,7 +42,7 @@ export function ReferencesSection() {
               render={<Link href={ref.reviewUrl} target="_blank" rel="noopener noreferrer" />}
               nativeButton={false}
               variant="outline"
-              className="mt-2 rounded-full"
+              className="mt-2 h-11 rounded-full"
             >
               Zobacz opinię
             </Button>

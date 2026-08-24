@@ -19,7 +19,7 @@ export function ContactCta() {
             render={<Link href="/kontakt" />}
             nativeButton={false}
             size="lg"
-            className="gap-1.5 rounded-full px-7 text-base"
+            className="h-11 gap-1.5 rounded-full px-7 text-base"
           >
             Skontaktuj się
             <ArrowRight />

@@ -53,7 +53,11 @@ export function Footer() {
           <h3 className="text-sm font-semibold tracking-[0.15em] text-white uppercase">Szybkie linki</h3>
           <nav className="flex flex-col gap-3 text-base">
             {QUICK_LINKS.map((link) => (
-              <Link key={link.href} href={link.href} className="w-fit transition-colors hover:text-white">
+              <Link
+                key={link.href}
+                href={link.href}
+                className="inline-flex w-fit items-center py-2.5 transition-colors hover:text-white"
+              >
                 {link.label}
               </Link>
             ))}
@@ -72,7 +76,7 @@ export function Footer() {
             render={<Link href="/kontakt" />}
             nativeButton={false}
             variant="outline"
-            className="w-fit border-white/15 bg-transparent text-white hover:bg-white/10 hover:text-white"
+            className="h-11 w-fit border-white/15 bg-transparent text-white hover:bg-white/10 hover:text-white"
           >
             Zobacz na mapie
           </Button>
@@ -83,20 +87,20 @@ export function Footer() {
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3 px-6 py-5 text-sm lg:px-8">
           <p>© {year} SPRINT-TRANS. Wszelkie prawa zastrzeżone.</p>
           <nav className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
-            <Link href="/polityka-prywatnosci" className="hover:text-white">
+            <Link href="/polityka-prywatnosci" className="inline-flex items-center py-2.5 hover:text-white">
               Polityka prywatności
             </Link>
-            <Link href="/regulamin" className="hover:text-white">
+            <Link href="/regulamin" className="inline-flex items-center py-2.5 hover:text-white">
               Regulamin
             </Link>
-            <Link href="/admin/login" className="hover:text-white">
+            <Link href="/admin/login" className="inline-flex items-center py-2.5 hover:text-white">
               Panel administracyjny
             </Link>
             <Link
               href={FACEBOOK_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 hover:text-white"
+              className="inline-flex items-center gap-1 py-2.5 hover:text-white"
             >
               Facebook
               <ArrowUpRight className="size-3.5" />

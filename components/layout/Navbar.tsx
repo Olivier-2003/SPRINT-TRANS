@@ -118,7 +118,8 @@ export function Navbar() {
           <Button
             render={<Link href="/kalkulator" />}
             nativeButton={false}
-            className="mt-2 justify-center gap-1.5 rounded-full"
+            size="lg"
+            className="mt-2 h-12 justify-center gap-1.5 rounded-full"
           >
             Zapytaj o przejazd
             <ArrowRight />

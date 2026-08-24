@@ -36,7 +36,7 @@ export function CalculatorTeaser() {
       <ScrollReveal>
         <form
           onSubmit={onSubmit}
-          className="relative grid gap-6 overflow-hidden rounded-[28px] bg-card p-8 text-card-foreground shadow-[0_50px_100px_-28px_rgba(8,15,35,0.55)] ring-1 ring-foreground/10 sm:p-10 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] lg:items-end lg:gap-5"
+          className="relative grid gap-6 overflow-hidden rounded-[28px] bg-card p-6 text-card-foreground shadow-[0_50px_100px_-28px_rgba(8,15,35,0.55)] ring-1 ring-foreground/10 sm:p-8 lg:p-10 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] lg:items-end lg:gap-5"
         >
           <div
             aria-hidden="true"
