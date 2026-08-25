@@ -90,7 +90,7 @@ components/
   forms/       — formularze (LoginForm, DriverForm, BusForm, LineForm, TripForm,
                   CalculatorSettingsForm, ConfirmDeleteForm, InquiryForm) — tylko UI, logika w lib/
   admin/       — komponenty widoków panelu (tabele list, DashboardStats, AdminListHeader)
-  public/      — komponenty widoków publicznych (PhotoGallery, FleetGrid, BusDetails,
+  public/      — komponenty widoków publicznych (PhotoGallery, BusDetails,
                   LineSearchList, LineTimetable, TripsGrid, TripDetails)
 
 lib/
@@ -127,7 +127,7 @@ docs/plan.md  — pełny plan projektu zaakceptowany przed implementacją
 | Nawigacja / stopka (publiczne) | `app/(public)/layout.tsx` | `components/layout/Navbar.tsx`, `components/layout/Footer.tsx` |
 | O firmie | `app/(public)/o-firmie/page.tsx` | bezpośrednio w pliku strony (treść statyczna) |
 | Oferta | `app/(public)/oferta/page.tsx` | bezpośrednio w pliku strony |
-| Flota (lista / szczegóły) | `app/(public)/flota/**` | `components/public/fleet/FleetGrid.tsx`, `components/public/fleet/BusDetails.tsx`, `components/public/PhotoGallery.tsx` |
+| Flota (lista / szczegóły) | `app/(public)/flota/**` | `components/sections/FleetCategories.tsx`, `components/public/fleet/BusDetails.tsx`, `components/public/PhotoGallery.tsx` |
 | Rozkład jazdy (lista+szukajka / szczegóły) | `app/(public)/rozklad-jazdy/**` | `components/public/lines/LineSearchList.tsx`, `components/public/lines/LineTimetable.tsx` |
 | Wycieczki (lista / szczegóły) | `app/(public)/wycieczki/**` | `components/public/trips/TripsGrid.tsx`, `components/public/trips/TripDetails.tsx`, `components/public/PhotoGallery.tsx` |
 | Kalkulator + formularz zapytania | `app/(public)/kalkulator/page.tsx` | `components/forms/InquiryForm.tsx` |
