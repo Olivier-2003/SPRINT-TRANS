@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { formatDateParam } from "@/lib/calendar-grid";
 import { BOOKING_STATUS_LABELS, BOOKING_STATUS_BADGE_VARIANT } from "@/lib/booking-status";
 import type { ScheduleBookingEntry } from "@/lib/schedule-view";
 
@@ -12,9 +15,28 @@ function formatTime(date: Date): string {
   return date.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
 }
 
-export function DayScheduleView({ bookings }: { bookings: ScheduleBookingEntry[] }) {
+interface DayScheduleViewProps {
+  date: Date;
+  bookings: ScheduleBookingEntry[];
+}
+
+export function DayScheduleView({ date, bookings }: DayScheduleViewProps) {
   if (bookings.length === 0) {
-    return <p className="text-sm text-muted-foreground">Brak zleceń w tym dniu.</p>;
+    return (
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-dashed p-3 text-sm text-muted-foreground">
+        <span>Brak zleceń w tym dniu.</span>
+        <Button
+          render={<Link href={`/admin/zlecenia/nowy?date=${formatDateParam(date)}`} />}
+          nativeButton={false}
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+        >
+          <Plus className="size-3.5" />
+          Nowe zlecenie
+        </Button>
+      </div>
+    );
   }
 
   return (

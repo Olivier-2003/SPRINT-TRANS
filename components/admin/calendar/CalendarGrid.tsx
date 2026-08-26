@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { WEEKDAY_NAMES_PL, bookingCoversDay, type CalendarGridDay } from "@/lib/calendar-grid";
+import { Plus } from "lucide-react";
+import { WEEKDAY_NAMES_PL, bookingCoversDay, formatDateParam, type CalendarGridDay } from "@/lib/calendar-grid";
 import { BOOKING_STATUS_BADGE_VARIANT } from "@/lib/booking-status";
 import { Badge } from "@/components/ui/badge";
 import type { Booking, BookingDriver, BookingBus, Driver, Bus } from "@/lib/generated/prisma/client";
@@ -34,9 +35,20 @@ export function CalendarGrid({ days, bookings, today }: CalendarGridProps) {
               day.inCurrentMonth ? "" : "text-muted-foreground/50"
             }`}
           >
-            <span className={`text-xs ${isToday ? "font-semibold text-primary" : ""}`}>
-              {day.date.getDate()}
-            </span>
+            <div className="flex items-center justify-between gap-1">
+              <span className={`text-xs ${isToday ? "font-semibold text-primary" : ""}`}>
+                {day.date.getDate()}
+              </span>
+              {dayBookings.length === 0 && (
+                <Link
+                  href={`/admin/zlecenia/nowy?date=${formatDateParam(day.date)}`}
+                  aria-label={`Nowe zlecenie na ${formatDateParam(day.date)}`}
+                  className="flex size-4 shrink-0 items-center justify-center rounded text-muted-foreground/50 transition-colors hover:bg-muted hover:text-primary"
+                >
+                  <Plus className="size-3" />
+                </Link>
+              )}
+            </div>
             <div className="flex flex-col gap-1">
               {dayBookings.map((booking) => (
                 <Link

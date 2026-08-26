@@ -14,7 +14,7 @@ export function WeekScheduleView({ days, bookings }: { days: Date[]; bookings: S
             <h3 className="mb-2 text-sm font-semibold">
               {WEEKDAY_FULL_PL[index]}, {day.toLocaleDateString("pl-PL", { day: "2-digit", month: "2-digit" })}
             </h3>
-            <DayScheduleView bookings={dayBookings} />
+            <DayScheduleView date={day} bookings={dayBookings} />
           </div>
         );
       })}

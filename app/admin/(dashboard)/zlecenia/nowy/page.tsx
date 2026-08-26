@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateBookingForm } from "@/components/forms/CreateBookingForm";
 import { createManualBooking } from "@/lib/actions/bookings";
@@ -17,7 +18,9 @@ export default function NewBookingPage() {
           <CardTitle className="text-base">Dane zlecenia</CardTitle>
         </CardHeader>
         <CardContent>
-          <CreateBookingForm action={createManualBooking} />
+          <Suspense fallback={<p className="text-sm text-muted-foreground">Ładowanie…</p>}>
+            <CreateBookingForm action={createManualBooking} />
+          </Suspense>
         </CardContent>
       </Card>
     </div>

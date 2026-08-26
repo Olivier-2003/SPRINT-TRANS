@@ -76,9 +76,14 @@ export default async function CalendarPage({
             Zlecenia, przypisani kierowcy i autobusy, godziny oraz konflikty i ostrzeżenia.
           </p>
         </div>
-        <Button render={<Link href="/admin/kalendarz/generator" />} nativeButton={false} variant="outline" size="sm">
-          Generator propozycji grafiku
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button render={<Link href="/admin/kalendarz/generator" />} nativeButton={false} variant="outline" size="sm">
+            Generator propozycji grafiku
+          </Button>
+          <Button render={<Link href="/admin/zlecenia/nowy" />} nativeButton={false} size="sm">
+            Nowe zlecenie
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -176,7 +181,7 @@ async function DayView({ date }: { date: Date }) {
   const rangeStart = date;
   const rangeEnd = addDays(date, 1);
   const entries = await getScheduleEntries(rangeStart, rangeEnd);
-  return <DayScheduleView bookings={entries} />;
+  return <DayScheduleView date={date} bookings={entries} />;
 }
 
 async function WeekView({ date }: { date: Date }) {

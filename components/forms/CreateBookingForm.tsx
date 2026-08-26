@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useSearchParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -26,9 +27,19 @@ interface CreateBookingFormProps {
   action: (data: CreateBookingInput) => Promise<ActionState>;
 }
 
+// Godzina domyślna, gdy przychodzimy z Kalendarza z gotową datą, ale bez
+// godziny — ta sama konwencja co skrócony kalkulator na stronie głównej
+// (CalculatorTeaser), żeby nie wprowadzać kolejnej "domyślnej godziny".
+const DEFAULT_TIME = "09:00";
+
 export function CreateBookingForm({ action }: CreateBookingFormProps) {
   const [serverError, setServerError] = useState<string | undefined>();
   const [isPending, startTransition] = useTransition();
+
+  const searchParams = useSearchParams();
+  const dateParam = searchParams.get("date");
+  const initialStartAt =
+    dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam) ? `${dateParam}T${DEFAULT_TIME}` : "";
 
   const {
     register,
@@ -37,7 +48,7 @@ export function CreateBookingForm({ action }: CreateBookingFormProps) {
     formState: { errors },
   } = useForm<CreateBookingInput>({
     resolver: zodResolver(createBookingSchema),
-    defaultValues: createBookingDefaultValues,
+    defaultValues: { ...createBookingDefaultValues, startAt: initialStartAt },
   });
 
   const onSubmit = (data: CreateBookingInput) => {
