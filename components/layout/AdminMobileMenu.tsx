@@ -28,7 +28,7 @@ export function AdminMobileMenu({ adminName, adminEmail }: AdminMobileMenuProps)
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="inline-flex size-9 items-center justify-center rounded-lg text-sidebar-foreground hover:bg-sidebar-accent"
+          className="inline-flex size-11 items-center justify-center rounded-lg text-sidebar-foreground hover:bg-sidebar-accent"
           aria-label="Otwórz menu"
         >
           <Menu className="size-5" />

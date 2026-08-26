@@ -14,7 +14,7 @@ export default async function AdminDashboardLayout({
       <div className="hidden shrink-0 border-r border-sidebar-border print:hidden sm:flex">
         <AdminSidebar adminName={session?.user?.name} adminEmail={session?.user?.email} />
       </div>
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <AdminMobileMenu adminName={session?.user?.name} adminEmail={session?.user?.email} />
         <main className="flex-1 bg-background p-4 sm:p-6">{children}</main>
       </div>
