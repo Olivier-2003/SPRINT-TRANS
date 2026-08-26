@@ -6,7 +6,7 @@ import type { Booking } from "@/lib/generated/prisma/client";
 
 interface BookingOverviewProps {
   booking: Booking;
-  sourceInquiryId: string;
+  sourceInquiryId: string | null;
 }
 
 export function BookingOverview({ booking, sourceInquiryId }: BookingOverviewProps) {
@@ -33,14 +33,20 @@ export function BookingOverview({ booking, sourceInquiryId }: BookingOverviewPro
             <span className="text-muted-foreground">Cena końcowa: </span>
             <span className="font-medium">{Number(booking.finalPrice).toFixed(2)} zł</span>
           </div>
-          <div className="pt-2">
-            <Link
-              href={`/admin/zapytania/${sourceInquiryId}`}
-              className="underline underline-offset-2"
-            >
-              Zobacz pierwotne zapytanie i historię wycen
-            </Link>
-          </div>
+          {sourceInquiryId ? (
+            <div className="pt-2">
+              <Link
+                href={`/admin/zapytania/${sourceInquiryId}`}
+                className="underline underline-offset-2"
+              >
+                Zobacz pierwotne zapytanie i historię wycen
+              </Link>
+            </div>
+          ) : (
+            <div className="pt-2 text-xs text-muted-foreground">
+              Zlecenie utworzone ręcznie w panelu — bez powiązanego zapytania.
+            </div>
+          )}
         </CardContent>
       </Card>
 

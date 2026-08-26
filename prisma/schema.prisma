@@ -522,8 +522,8 @@ enum BookingStatus {
 
 model Booking {
   id              String        @id @default(cuid())
-  sourceInquiryId String        @unique
-  sourceInquiry   Inquiry       @relation(fields: [sourceInquiryId], references: [id])
+  sourceInquiryId String?       @unique
+  sourceInquiry   Inquiry?      @relation(fields: [sourceInquiryId], references: [id])
   customerName    String
   customerEmail   String
   customerPhone   String

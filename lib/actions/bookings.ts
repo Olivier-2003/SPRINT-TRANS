@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import {
@@ -16,12 +17,14 @@ import {
   swapBusSchema,
   bookingRouteSchema,
   bookingScheduleSchema,
+  createBookingSchema,
   type AssignDriverInput,
   type AssignBusInput,
   type SwapDriverInput,
   type SwapBusInput,
   type BookingRouteInput,
   type BookingScheduleInput,
+  type CreateBookingInput,
 } from "@/lib/validation/booking-admin";
 
 export type ActionState = { error?: string; success?: boolean } | undefined;
@@ -340,4 +343,54 @@ export async function updateBookingSchedule(
   revalidatePath("/admin/zlecenia");
   revalidatePath("/admin/kalendarz");
   return { success: true };
+}
+
+/**
+ * Ręczne utworzenie zlecenia bez powiązanego zapytania — dla przypadków
+ * umówionych telefonicznie/mailowo poza formularzem na stronie publicznej.
+ * W przeciwieństwie do createBookingFromInquiry, sourceInquiryId jest null.
+ */
+export async function createManualBooking(data: CreateBookingInput): Promise<ActionState> {
+  const parsed = createBookingSchema.safeParse(data);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Popraw dane zlecenia." };
+  }
+
+  const session = await auth();
+  const {
+    customerName,
+    customerEmail,
+    customerPhone,
+    startAt,
+    endAt,
+    finalPrice,
+    status,
+    points,
+  } = parsed.data;
+
+  const booking = await db.booking.create({
+    data: {
+      sourceInquiryId: null,
+      customerName,
+      customerEmail,
+      customerPhone,
+      startAt: new Date(startAt),
+      endAt: new Date(endAt),
+      finalPrice: Number(finalPrice),
+      status,
+      createdById: session?.user?.id,
+      routePoints: {
+        create: points.map((point, index) => ({
+          sequence: index,
+          pointType: point.pointType,
+          label: point.label,
+        })),
+      },
+    },
+  });
+
+  revalidatePath("/admin/zlecenia");
+  revalidatePath("/admin/kalendarz");
+  revalidatePath("/admin");
+  redirect(`/admin/zlecenia/${booking.id}`);
 }
