@@ -78,14 +78,12 @@ const DERIVATIVE_DELTA = 0.004;
  * płynnie interpolowanych (ease-in/ease-out na każdym odcinku), więc realnie
  * przemierza widoczną szerokość layoutu, a nie tylko ślizga się przy krawędzi.
  *
- * Bezpieczeństwo — dlaczego NIGDY nie zasłania treści:
+ * Celowo jeździ NAD treścią sekcji (wysoki `z-index`, poniżej tylko sticky
+ * navbaru) — ma "przejeżdżać przez" karty/sekcje jako widoczny, dekoracyjny
+ * akcent, a nie znikać pod ich tłem. Mimo to nigdy nie przeszkadza w
+ * korzystaniu ze strony:
  * - `position: fixed`, więc nie wpływa na wysokość/układ żadnej sekcji,
  * - `pointer-events-none` — nigdy nie przechwytuje kliknięć/interakcji,
- * - ma NISKI, jawny `z-index` (poniżej treści), a każda sekcja strony głównej
- *   (i stopka) ma `position: relative`, więc w kolejności malowania CSS zawsze
- *   znajduje się NAD autobusem, niezależnie od tego, w którym miejscu strony
- *   akurat się on znajduje — to gwarancja architektoniczna (stacking context),
- *   a nie tylko dobór trasy tak, by "zwykle" niczego nie zasłaniać,
  * - widoczny dopiero od `xl` (1280px) w górę; poniżej tego progu jest ukryty,
  * - przy `prefers-reduced-motion` animacja jest całkowicie wyłączona.
  */
@@ -132,7 +130,7 @@ export function GlobalScrollBus({ className }: GlobalScrollBusProps) {
     <div
       aria-hidden="true"
       className={cn(
-        "pointer-events-none fixed z-0 hidden w-40 -translate-x-1/2 -translate-y-1/2 select-none xl:block",
+        "pointer-events-none fixed z-40 hidden w-40 -translate-x-1/2 -translate-y-1/2 select-none xl:block",
         className
       )}
       style={{

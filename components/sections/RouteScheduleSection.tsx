@@ -34,24 +34,22 @@ export function RouteScheduleSection() {
       <SectionWaveDivider position="top" fill="var(--color-brand-navy)" />
       <SectionWaveDivider position="bottom" fill="var(--background)" />
       <div className="relative mx-auto max-w-[1600px] px-6 lg:px-8">
-        <ScrollReveal className="mb-14 flex flex-wrap items-end justify-between gap-8">
-          <div>
-            <span className="text-sm font-semibold tracking-[0.2em] text-brand-navy-muted uppercase">
-              Trasa przejazdu
-            </span>
-            <h2 className="mt-3 max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
-              Linia łącząca Barcin z Inowrocławiem
-            </h2>
-            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-brand-navy-muted">
-              Nasza regularna linia pokonuje trasę między Barcinem a Inowrocławiem, zatrzymując się po drodze na
-              wielu przystankach.
-            </p>
-          </div>
+        <ScrollReveal className="mb-14 flex flex-col items-center gap-6 text-center">
+          <span className="text-sm font-semibold tracking-[0.2em] text-brand-navy-muted uppercase">
+            Trasa przejazdu
+          </span>
+          <h2 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
+            Linia łącząca Barcin z Inowrocławiem
+          </h2>
+          <p className="max-w-2xl text-lg leading-relaxed text-brand-navy-muted">
+            Nasza regularna linia pokonuje trasę między Barcinem a Inowrocławiem, zatrzymując się po drodze na wielu
+            przystankach.
+          </p>
           <div className="flex items-center gap-4 rounded-2xl bg-white/5 px-6 py-4 ring-1 ring-white/10">
             <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary">
               <Route className="size-6" />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col items-start">
               <span className="text-3xl font-extrabold tracking-tight text-white">
                 <CountUp target={STOPS.length} />
               </span>
@@ -60,7 +58,7 @@ export function RouteScheduleSection() {
           </div>
         </ScrollReveal>
 
-        <ScrollReveal className="mb-8 flex justify-end">
+        <ScrollReveal className="mb-8 flex justify-center">
           <Button
             type="button"
             onClick={() => setReversed((v) => !v)}
