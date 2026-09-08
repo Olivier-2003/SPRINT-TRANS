@@ -134,7 +134,7 @@ export function GlobalScrollBus({ src, className }: GlobalScrollBusProps) {
     <div
       aria-hidden="true"
       className={cn(
-        "pointer-events-none fixed z-0 hidden w-20 -translate-x-1/2 -translate-y-1/2 opacity-70 select-none xl:block",
+        "pointer-events-none fixed z-0 hidden w-40 -translate-x-1/2 -translate-y-1/2 select-none xl:block",
         className
       )}
       style={{
@@ -149,7 +149,7 @@ export function GlobalScrollBus({ src, className }: GlobalScrollBusProps) {
     >
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt="" className="h-full w-full object-contain opacity-90 drop-shadow-xl" />
+        <img src={src} alt="" className="h-full w-full object-contain drop-shadow-2xl" />
       ) : (
         <MiniBusPlaceholderSvg />
       )}

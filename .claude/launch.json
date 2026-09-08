@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "sprint-trans-dev",
-      "runtimeExecutable": "C:\\Users\\olivi\\Desktop\\Strona\\scripts\\dev.cmd",
-      "runtimeArgs": [],
+      "runtimeExecutable": "C:\\Program Files\\nodejs\\npm.cmd",
+      "runtimeArgs": ["run", "dev"],
       "port": 3000
     }
   ]

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MapPin, Phone, Mail, FileText, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { COMPANY_ADDRESS, COMPANY_MAP_EMBED_SRC } from "@/lib/company-info";
 
 export default function ContactPage() {
   return (
@@ -20,7 +21,7 @@ export default function ContactPage() {
             <dl className="flex flex-col gap-3 text-sm text-muted-foreground">
               <div className="flex items-start gap-2">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
-                <dd>[adres do uzupełnienia]</dd>
+                <dd>{COMPANY_ADDRESS}</dd>
               </div>
               <div className="flex items-start gap-2">
                 <Phone className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -38,11 +39,14 @@ export default function ContactPage() {
           </CardContent>
         </Card>
 
-        <div className="flex aspect-video items-center justify-center rounded-2xl border bg-muted text-sm text-muted-foreground lg:aspect-auto">
-          <div className="flex flex-col items-center gap-2">
-            <MapPin className="size-6" />
-            Mapa — do podpięcia po uzupełnieniu adresu
-          </div>
+        <div className="aspect-video overflow-hidden rounded-2xl border lg:aspect-auto">
+          <iframe
+            src={COMPANY_MAP_EMBED_SRC}
+            title="Lokalizacja SPRINT-TRANS na mapie"
+            loading="lazy"
+            className="h-full w-full min-h-64"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
         </div>
       </div>
 

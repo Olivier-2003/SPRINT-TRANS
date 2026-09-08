@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MapPin, Phone, Mail, FileText, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AnimatedLogo } from "@/components/animations/AnimatedLogo";
+import { COMPANY_ADDRESS, COMPANY_MAP_EMBED_SRC } from "@/lib/company-info";
 
 const FACEBOOK_URL = "https://www.facebook.com/sprinttranspiechcin";
 
@@ -32,7 +33,7 @@ export function Footer() {
           <dl className="flex flex-col gap-3.5 text-base">
             <div className="flex items-start gap-2.5">
               <MapPin className="mt-0.5 size-5 shrink-0 text-primary" />
-              <dd>ul. Transportowa 1, 00-000 Miejscowość [do uzupełnienia]</dd>
+              <dd>{COMPANY_ADDRESS}</dd>
             </div>
             <div className="flex items-start gap-2.5">
               <Phone className="mt-0.5 size-5 shrink-0 text-primary" />
@@ -66,11 +67,14 @@ export function Footer() {
 
         <div className="flex flex-col gap-4">
           <h3 className="text-sm font-semibold tracking-[0.15em] text-white uppercase">Gdzie nas znajdziesz</h3>
-          <div className="flex aspect-4/3 items-center justify-center rounded-xl border border-brand-navy-border bg-white/5 text-sm">
-            <div className="flex flex-col items-center gap-2 text-brand-navy-muted">
-              <MapPin className="size-8" />
-              <span>Mapa — do podpięcia po uzupełnieniu adresu</span>
-            </div>
+          <div className="aspect-4/3 overflow-hidden rounded-xl border border-brand-navy-border">
+            <iframe
+              src={COMPANY_MAP_EMBED_SRC}
+              title="Lokalizacja SPRINT-TRANS na mapie"
+              loading="lazy"
+              className="h-full w-full grayscale-[15%]"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </div>
           <Button
             render={<Link href="/kontakt" />}
