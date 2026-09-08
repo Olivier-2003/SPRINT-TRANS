@@ -7,7 +7,7 @@ import { FLEET_CATEGORIES } from "@/components/sections/fleet-categories-data";
 
 export function FleetPreview() {
   return (
-    <section className="relative mx-auto max-w-[1600px] px-6 py-14 md:py-20 lg:px-8">
+    <section className="relative mx-auto max-w-[1600px] px-6 pt-14 pb-10 md:pt-20 md:pb-14 lg:px-8">
       <ScrollReveal className="mb-10 flex flex-col items-start gap-3">
         <span className="text-sm font-semibold tracking-[0.2em] text-primary uppercase">Nasza flota</span>
         <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">Komfort i bezpieczeństwo</h2>

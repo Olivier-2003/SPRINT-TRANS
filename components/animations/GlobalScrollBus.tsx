@@ -57,16 +57,17 @@ const HORIZONTAL_PATH: Waypoint[] = [
   { t: 1, value: 22 },
 ];
 
-// Tor pionowy (vh) — celowo ograniczony do górnej części viewportu (nigdy nie
-// schodzi w głąb strony), żeby autobus zawsze czytał się jako stały motyw przy
-// górze, a nie "gubił się" w pustych albo gęstych od treści partiach strony.
+// Tor pionowy (vh) — swobodnie przemierza wysokość strony. Dzięki wysokiemu
+// z-index (patrz niżej) autobus zawsze rysuje się NAD treścią, więc nie ma
+// ryzyka, że "zgubi się" w pustych partiach strony — może więc mieć szerszy,
+// bardziej żywy zakres ruchu.
 const VERTICAL_PATH: Waypoint[] = [
-  { t: 0, value: 10 },
-  { t: 0.2, value: 17 },
-  { t: 0.4, value: 9 },
-  { t: 0.6, value: 19 },
-  { t: 0.8, value: 11 },
-  { t: 1, value: 15 },
+  { t: 0, value: 14 },
+  { t: 0.2, value: 58 },
+  { t: 0.4, value: 24 },
+  { t: 0.6, value: 66 },
+  { t: 0.8, value: 30 },
+  { t: 1, value: 56 },
 ];
 
 const DERIVATIVE_DELTA = 0.004;

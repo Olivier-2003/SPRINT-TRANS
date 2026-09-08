@@ -74,26 +74,26 @@ export function RouteScheduleSection() {
         <ScrollReveal delay={150}>
           <div className="relative -mx-6 px-6 lg:mx-0 lg:px-0">
             <div className="snap-x snap-mandatory overflow-x-auto pb-4 lg:snap-none lg:overflow-visible lg:pb-0">
-              <ol className="relative flex min-w-max items-start justify-between gap-2 lg:min-w-0 lg:gap-0">
+              <ol className="relative flex min-w-max items-start justify-between gap-4 lg:min-w-0 lg:gap-0">
                 <div
                   aria-hidden="true"
-                  className="absolute top-6 right-6 left-6 h-px bg-white/15"
+                  className="absolute top-8 right-8 left-8 h-px bg-white/15"
                 />
                 {/* Kropka sugerująca kurs autobusu wzdłuż trasy — czysto dekoracyjna. */}
                 <div
                   aria-hidden="true"
-                  className="route-travel-dot pointer-events-none absolute top-6 z-10 size-2.5 -translate-y-1/2 rounded-full bg-primary shadow-[0_0_10px_2px_var(--color-primary)]"
+                  className="route-travel-dot pointer-events-none absolute top-8 z-10 size-3 -translate-y-1/2 rounded-full bg-primary shadow-[0_0_12px_3px_var(--color-primary)]"
                 />
                 {stops.map((stop, i) => {
                   const endpoint = i === 0 || i === stops.length - 1;
                   return (
                     <li
                       key={stop}
-                      className="relative flex w-24 shrink-0 snap-start flex-col items-center gap-3 text-center lg:w-auto lg:flex-1 lg:shrink"
+                      className="relative flex w-28 shrink-0 snap-start flex-col items-center gap-4 text-center lg:w-auto lg:flex-1 lg:shrink"
                     >
                       <span
                         className={cn(
-                          "relative z-10 flex size-12 shrink-0 items-center justify-center rounded-full text-sm font-bold ring-4 ring-brand-navy",
+                          "relative z-10 flex size-16 shrink-0 items-center justify-center rounded-full text-lg font-bold ring-4 ring-brand-navy",
                           endpoint ? "bg-primary text-primary-foreground" : "bg-white/10 text-white"
                         )}
                       >
@@ -101,7 +101,7 @@ export function RouteScheduleSection() {
                       </span>
                       <span
                         className={cn(
-                          "text-sm leading-snug",
+                          "text-base leading-snug",
                           endpoint ? "font-semibold text-white" : "font-medium text-brand-navy-muted"
                         )}
                       >
