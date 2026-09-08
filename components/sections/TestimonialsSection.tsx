@@ -26,7 +26,7 @@ const TESTIMONIALS = [
 export function TestimonialsSection() {
   return (
     <section className="relative mx-auto max-w-[1600px] px-6 pt-10 pb-14 md:pt-14 md:pb-20 lg:px-8">
-      <ScrollReveal className="mb-10 flex flex-col gap-3">
+      <ScrollReveal className="mb-10 flex flex-col items-center gap-3 text-center">
         <span className="text-sm font-semibold tracking-[0.2em] text-primary uppercase">Opinie klientów</span>
         <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">Zaufanie to nasza najlepsza droga</h2>
       </ScrollReveal>

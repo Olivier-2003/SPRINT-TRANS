@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ImageOff, ChevronRight } from "lucide-react";
+import { ImageOff, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
@@ -22,26 +22,27 @@ export function TripsPreview({ trips }: { trips: TripWithPhotos[] }) {
 
   return (
     <section className="relative mx-auto max-w-[1600px] px-6 pt-14 pb-10 md:pt-20 md:pb-14 lg:px-8">
-      <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
-        <ScrollReveal className="flex flex-col gap-3">
-          <span className="text-sm font-semibold tracking-[0.2em] text-primary uppercase">
-            Najpopularniejsze wycieczki
-          </span>
-          <h2 className="max-w-lg text-4xl font-bold tracking-tight sm:text-5xl">
-            Odkryj z nami najpiękniejsze miejsca
-          </h2>
-        </ScrollReveal>
+      <ScrollReveal className="mb-8 flex flex-col items-center gap-3 text-center">
+        <span className="text-sm font-semibold tracking-[0.2em] text-primary uppercase">
+          Najpopularniejsze wycieczki
+        </span>
+        <h2 className="max-w-lg text-4xl font-bold tracking-tight sm:text-5xl">
+          Odkryj z nami najpiękniejsze miejsca
+        </h2>
+      </ScrollReveal>
+
+      <ScrollReveal className="mb-10 flex justify-center">
         <Button
           render={<Link href="/wycieczki" />}
           nativeButton={false}
           variant="outline"
           size="lg"
-          className="hidden h-11 gap-1.5 rounded-full px-6 text-base lg:inline-flex"
+          className="h-11 gap-1.5 rounded-full px-6 text-base"
         >
           Zobacz wszystkie wycieczki
           <ChevronRight />
         </Button>
-      </div>
+      </ScrollReveal>
 
       {preview.length === 0 ? (
         <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
@@ -91,19 +92,6 @@ export function TripsPreview({ trips }: { trips: TripWithPhotos[] }) {
           ))}
         </div>
       )}
-
-      <div className="mt-10 flex justify-center lg:hidden">
-        <Button
-          render={<Link href="/wycieczki" />}
-          nativeButton={false}
-          variant="outline"
-          size="lg"
-          className="h-11 gap-1.5 rounded-full px-6 text-base"
-        >
-          Zobacz wszystkie wycieczki
-          <ArrowRight />
-        </Button>
-      </div>
     </section>
   );
 }
