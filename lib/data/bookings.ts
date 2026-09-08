@@ -19,6 +19,7 @@ export function getBooking(id: string) {
           priceQuotes: { orderBy: { createdAt: "desc" } },
         },
       },
+      sourceLine: { select: { id: true, name: true } },
       routePoints: { orderBy: { sequence: "asc" } },
       drivers: { include: { driver: true } },
       buses: { include: { bus: true } },

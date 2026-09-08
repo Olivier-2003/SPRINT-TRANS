@@ -7,9 +7,10 @@ import type { Booking } from "@/lib/generated/prisma/client";
 interface BookingOverviewProps {
   booking: Booking;
   sourceInquiryId: string | null;
+  sourceLine: { id: string; name: string } | null;
 }
 
-export function BookingOverview({ booking, sourceInquiryId }: BookingOverviewProps) {
+export function BookingOverview({ booking, sourceInquiryId, sourceLine }: BookingOverviewProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <Card>
@@ -40,6 +41,12 @@ export function BookingOverview({ booking, sourceInquiryId }: BookingOverviewPro
                 className="underline underline-offset-2"
               >
                 Zobacz pierwotne zapytanie i historię wycen
+              </Link>
+            </div>
+          ) : sourceLine ? (
+            <div className="pt-2">
+              <Link href={`/admin/linie/${sourceLine.id}`} className="underline underline-offset-2">
+                Zaplanowany kurs linii: {sourceLine.name}
               </Link>
             </div>
           ) : (

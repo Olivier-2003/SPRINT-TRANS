@@ -4,7 +4,8 @@ import { CalendarGrid } from "@/components/admin/calendar/CalendarGrid";
 import { ResourceAvailabilityGrid } from "@/components/admin/calendar/ResourceAvailabilityGrid";
 import { DayScheduleView } from "@/components/admin/calendar/DayScheduleView";
 import { WeekScheduleView } from "@/components/admin/calendar/WeekScheduleView";
-import { getBookingsOverlapping } from "@/lib/data/calendar";
+import { getCalendarEntriesOverlapping } from "@/lib/data/calendar";
+import { db } from "@/lib/db";
 import { getDriverResourceGrid, getBusResourceGrid } from "@/lib/resource-calendar";
 import { getScheduleEntries } from "@/lib/schedule-view";
 import {
@@ -196,8 +197,62 @@ async function BookingsView({ year, month, today }: { year: number; month: numbe
   const days = buildMonthGrid(year, month);
   const rangeStart = days[0].date;
   const rangeEnd = new Date(days[41].date.getTime() + 24 * 60 * 60 * 1000);
-  const bookings = await getBookingsOverlapping(rangeStart, rangeEnd);
-  return <CalendarGrid days={days} bookings={bookings} today={today} />;
+  const [{ bookings, lineRuns }, drivers, buses, lines] = await Promise.all([
+    getCalendarEntriesOverlapping(rangeStart, rangeEnd),
+    db.driver.findMany({
+      where: { employmentStatus: "ACTIVE" },
+      select: { id: true, firstName: true, lastName: true },
+      orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
+    }),
+    db.bus.findMany({
+      where: { status: "ACTIVE" },
+      select: { id: true, registrationNumber: true, brandModel: true },
+      orderBy: { registrationNumber: "asc" },
+    }),
+    db.regularLine.findMany({
+      where: { active: true },
+      select: {
+        id: true,
+        name: true,
+        originLabel: true,
+        destinationLabel: true,
+        schedules: {
+          select: { daysOfWeek: true, departureTime: true, arrivalTime: true, price: true },
+        },
+      },
+      orderBy: { name: "asc" },
+    }),
+  ]);
+
+  // Decimal (LineSchedule.price) nie może przekroczyć granicy server/client.
+  const serializableLines = lines.map((line) => ({
+    ...line,
+    schedules: line.schedules.map((s) => ({ ...s, price: Number(s.price) })),
+  }));
+
+  // CalendarGrid jest komponentem klienckim — Prisma Decimal (finalPrice, plannedHours)
+  // nie może przekroczyć granicy server/client, więc mapujemy do zwykłych obiektów.
+  const serializableBookings = bookings.map((booking) => ({
+    id: booking.id,
+    startAt: booking.startAt,
+    endAt: booking.endAt,
+    customerName: booking.customerName,
+    status: booking.status,
+    drivers: booking.drivers.map((d) => ({ driverId: d.driverId, driver: d.driver })),
+    buses: booking.buses.map((b) => ({ busId: b.busId, bus: b.bus })),
+  }));
+
+  return (
+    <CalendarGrid
+      days={days}
+      bookings={serializableBookings}
+      lineRuns={lineRuns}
+      today={today}
+      drivers={drivers.map((d) => ({ id: d.id, label: `${d.firstName} ${d.lastName}` }))}
+      buses={buses.map((b) => ({ id: b.id, label: `${b.registrationNumber} — ${b.brandModel}` }))}
+      lines={serializableLines}
+    />
+  );
 }
 
 async function DriversView({ year, month }: { year: number; month: number }) {

@@ -73,7 +73,7 @@ export default async function BookingDetailPage({
         action={updateBookingStatus}
       />
 
-      <BookingOverview booking={booking} sourceInquiryId={booking.sourceInquiryId} />
+      <BookingOverview booking={booking} sourceInquiryId={booking.sourceInquiryId} sourceLine={booking.sourceLine} />
 
       <Card>
         <CardHeader>

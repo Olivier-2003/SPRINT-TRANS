@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -32,12 +33,13 @@ export function AssignBusForm({ bookingId, buses, action }: AssignBusFormProps) 
 
   const {
     control,
+    register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<AssignBusInput>({
     resolver: zodResolver(assignBusSchema),
-    defaultValues: { busId: "" },
+    defaultValues: { busId: "", plannedHours: "" },
   });
 
   const onSubmit = (data: AssignBusInput) => {
@@ -45,7 +47,7 @@ export function AssignBusForm({ bookingId, buses, action }: AssignBusFormProps) 
     startTransition(async () => {
       const result = await action(bookingId, data);
       if (result?.error) setServerError(result.error);
-      else reset({ busId: "" });
+      else reset({ busId: "", plannedHours: "" });
     });
   };
 
@@ -76,6 +78,17 @@ export function AssignBusForm({ bookingId, buses, action }: AssignBusFormProps) 
           )}
         />
         {errors.busId && <p className="text-sm text-destructive">{errors.busId.message}</p>}
+      </div>
+      <div className="flex flex-col gap-1">
+        <Input
+          type="number"
+          step="0.5"
+          min="0"
+          placeholder="Liczba godzin (opcjonalnie)"
+          className="w-44"
+          {...register("plannedHours")}
+        />
+        {errors.plannedHours && <p className="text-sm text-destructive">{errors.plannedHours.message}</p>}
       </div>
       <Button type="submit" size="sm" disabled={isPending}>
         {isPending ? "Przypisywanie…" : "Przypisz autobus"}

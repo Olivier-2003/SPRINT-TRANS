@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -28,6 +29,7 @@ interface SwapBusControlProps {
 export function SwapBusControl({ bookingId, currentBusId, buses, action }: SwapBusControlProps) {
   const [expanded, setExpanded] = useState(false);
   const [newBusId, setNewBusId] = useState("");
+  const [plannedHours, setPlannedHours] = useState("");
   const [error, setError] = useState<string | undefined>();
   const [isPending, startTransition] = useTransition();
 
@@ -38,7 +40,7 @@ export function SwapBusControl({ bookingId, currentBusId, buses, action }: SwapB
     }
     setError(undefined);
     startTransition(async () => {
-      const result = await action(bookingId, currentBusId, { newBusId });
+      const result = await action(bookingId, currentBusId, { newBusId, plannedHours });
       if (result?.error) setError(result.error);
       else setExpanded(false);
     });
@@ -70,6 +72,15 @@ export function SwapBusControl({ bookingId, currentBusId, buses, action }: SwapB
             ))}
           </SelectContent>
         </Select>
+        <Input
+          type="number"
+          step="0.5"
+          min="0"
+          placeholder="Godziny (opcjonalnie)"
+          className="w-36"
+          value={plannedHours}
+          onChange={(e) => setPlannedHours(e.target.value)}
+        />
         <Button type="button" size="sm" onClick={handleSubmit} disabled={isPending}>
           {isPending ? "Zmiana…" : "Zatwierdź"}
         </Button>

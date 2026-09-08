@@ -18,6 +18,9 @@ import {
   bookingRouteSchema,
   bookingScheduleSchema,
   createBookingSchema,
+  updateAssignmentHoursSchema,
+  createBookingWithAssignmentsSchema,
+  createLineRunBookingSchema,
   type AssignDriverInput,
   type AssignBusInput,
   type SwapDriverInput,
@@ -25,6 +28,9 @@ import {
   type BookingRouteInput,
   type BookingScheduleInput,
   type CreateBookingInput,
+  type UpdateAssignmentHoursInput,
+  type CreateBookingWithAssignmentsInput,
+  type CreateLineRunBookingInput,
 } from "@/lib/validation/booking-admin";
 
 export type ActionState = { error?: string; success?: boolean } | undefined;
@@ -90,6 +96,7 @@ export async function assignDriver(bookingId: string, data: AssignDriverInput): 
         bookingId,
         driverId: parsed.data.driverId,
         roleOnTrip: parsed.data.roleOnTrip || null,
+        plannedHours: parsed.data.plannedHours ? Number(parsed.data.plannedHours) : null,
       },
     }),
     db.bookingAssignmentHistory.create({
@@ -171,6 +178,7 @@ export async function swapDriver(
         bookingId,
         driverId: parsed.data.newDriverId,
         roleOnTrip: parsed.data.roleOnTrip || null,
+        plannedHours: parsed.data.plannedHours ? Number(parsed.data.plannedHours) : null,
       },
     }),
     db.bookingAssignmentHistory.create({
@@ -212,7 +220,13 @@ export async function assignBus(bookingId: string, data: AssignBusInput): Promis
 
   const changedById = await currentAdminId();
   await db.$transaction([
-    db.bookingBus.create({ data: { bookingId, busId: parsed.data.busId } }),
+    db.bookingBus.create({
+      data: {
+        bookingId,
+        busId: parsed.data.busId,
+        plannedHours: parsed.data.plannedHours ? Number(parsed.data.plannedHours) : null,
+      },
+    }),
     db.bookingAssignmentHistory.create({
       data: {
         bookingId,
@@ -281,7 +295,13 @@ export async function swapBus(bookingId: string, oldBusId: string, data: SwapBus
 
   await db.$transaction([
     db.bookingBus.delete({ where: { bookingId_busId: { bookingId, busId: oldBusId } } }),
-    db.bookingBus.create({ data: { bookingId, busId: parsed.data.newBusId } }),
+    db.bookingBus.create({
+      data: {
+        bookingId,
+        busId: parsed.data.newBusId,
+        plannedHours: parsed.data.plannedHours ? Number(parsed.data.plannedHours) : null,
+      },
+    }),
     db.bookingAssignmentHistory.create({
       data: {
         bookingId,
@@ -393,4 +413,277 @@ export async function createManualBooking(data: CreateBookingInput): Promise<Act
   revalidatePath("/admin/kalendarz");
   revalidatePath("/admin");
   redirect(`/admin/zlecenia/${booking.id}`);
+}
+
+/** Edycja ręcznej liczby godzin na już przypisanym kierowcy/autobusie, bez zdejmowania przypisania. */
+export async function updateAssignmentHours(
+  bookingId: string,
+  resourceType: "driver" | "bus",
+  resourceId: string,
+  data: UpdateAssignmentHoursInput
+): Promise<ActionState> {
+  const parsed = updateAssignmentHoursSchema.safeParse(data);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Popraw liczbę godzin." };
+  }
+
+  const plannedHours = parsed.data.plannedHours ? Number(parsed.data.plannedHours) : null;
+
+  if (resourceType === "driver") {
+    await db.bookingDriver.update({
+      where: { bookingId_driverId: { bookingId, driverId: resourceId } },
+      data: { plannedHours },
+    });
+  } else {
+    await db.bookingBus.update({
+      where: { bookingId_busId: { bookingId, busId: resourceId } },
+      data: { plannedHours },
+    });
+  }
+
+  revalidatePath(detailPath(bookingId));
+  revalidatePath("/admin/kalendarz");
+  return { success: true };
+}
+
+export type CreateBookingResult = { error?: string; bookingId?: string };
+
+/**
+ * Utworzenie zlecenia wprost z dialogu w kalendarzu — w jednym kroku, opcjonalnie
+ * od razu z przypisanym kierowcą i/lub autobusem (oraz ręczną liczbą godzin).
+ * W przeciwieństwie do createManualBooking zwraca wynik zamiast przekierowywać,
+ * żeby dialog mógł zamknąć się bez przeładowania strony.
+ */
+export async function createBookingWithAssignments(
+  data: CreateBookingWithAssignmentsInput
+): Promise<CreateBookingResult> {
+  const parsed = createBookingWithAssignmentsSchema.safeParse(data);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Popraw dane zlecenia." };
+  }
+
+  const {
+    customerName,
+    customerEmail,
+    customerPhone,
+    startAt,
+    endAt,
+    finalPrice,
+    status,
+    points,
+    driverId,
+    driverRoleOnTrip,
+    driverPlannedHours,
+    busId,
+    busPlannedHours,
+  } = parsed.data;
+
+  const session = await auth();
+  const changedById = session?.user?.id;
+
+  try {
+    const booking = await db.$transaction(async (tx) => {
+      const created = await tx.booking.create({
+        data: {
+          sourceInquiryId: null,
+          customerName,
+          customerEmail,
+          customerPhone,
+          startAt: new Date(startAt),
+          endAt: new Date(endAt),
+          finalPrice: Number(finalPrice),
+          status,
+          createdById: changedById,
+          routePoints: {
+            create: points.map((point, index) => ({
+              sequence: index,
+              pointType: point.pointType,
+              label: point.label,
+            })),
+          },
+        },
+      });
+
+      if (driverId) {
+        const driver = await tx.driver.findUnique({ where: { id: driverId } });
+        if (!driver) throw new Error("DRIVER_NOT_FOUND");
+        await tx.bookingDriver.create({
+          data: {
+            bookingId: created.id,
+            driverId,
+            roleOnTrip: driverRoleOnTrip || null,
+            plannedHours: driverPlannedHours ? Number(driverPlannedHours) : null,
+          },
+        });
+        await tx.bookingAssignmentHistory.create({
+          data: {
+            bookingId: created.id,
+            resourceType: "KIEROWCA",
+            resourceId: driver.id,
+            resourceLabel: `${driver.firstName} ${driver.lastName}`,
+            changeType: "PRZYPISANO",
+            changedById,
+          },
+        });
+      }
+
+      if (busId) {
+        const bus = await tx.bus.findUnique({ where: { id: busId } });
+        if (!bus) throw new Error("BUS_NOT_FOUND");
+        await tx.bookingBus.create({
+          data: {
+            bookingId: created.id,
+            busId,
+            plannedHours: busPlannedHours ? Number(busPlannedHours) : null,
+          },
+        });
+        await tx.bookingAssignmentHistory.create({
+          data: {
+            bookingId: created.id,
+            resourceType: "AUTOBUS",
+            resourceId: bus.id,
+            resourceLabel: `${bus.registrationNumber} — ${bus.brandModel}`,
+            changeType: "PRZYPISANO",
+            changedById,
+          },
+        });
+      }
+
+      return created;
+    });
+
+    revalidatePath("/admin/zlecenia");
+    revalidatePath("/admin/kalendarz");
+    revalidatePath("/admin");
+    return { bookingId: booking.id };
+  } catch (error) {
+    if (error instanceof Error && error.message === "DRIVER_NOT_FOUND") {
+      return { error: "Nie znaleziono wybranego kierowcy." };
+    }
+    if (error instanceof Error && error.message === "BUS_NOT_FOUND") {
+      return { error: "Nie znaleziono wybranego autobusu." };
+    }
+    throw error;
+  }
+}
+
+const LINE_ROUTE_POINT_LABEL_PLACEHOLDER = "—";
+
+/**
+ * Tworzy zlecenie reprezentujące zaplanowany kurs linii regularnej — wprost z
+ * kalendarza, bez zapytania klienta. W przeciwieństwie do zwykłego zlecenia nie ma
+ * danych kontaktowych klienta (kurs linii nie jest wynajmem dla jednej osoby), a
+ * trasa jest kopiowana z przystanków linii (RegularLine.stops), nie wpisywana ręcznie.
+ * Zlecenie zachowuje powiązanie z linią (sourceLineId) do przyszłych zestawień.
+ */
+export async function createLineRunBooking(data: CreateLineRunBookingInput): Promise<CreateBookingResult> {
+  const parsed = createLineRunBookingSchema.safeParse(data);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Popraw dane kursu." };
+  }
+
+  const { lineId, startAt, endAt, finalPrice, status, driverId, driverRoleOnTrip, driverPlannedHours, busId, busPlannedHours } =
+    parsed.data;
+
+  const line = await db.regularLine.findUnique({
+    where: { id: lineId },
+    include: { stops: { orderBy: { sortOrder: "asc" } } },
+  });
+  if (!line) return { error: "Nie znaleziono wybranej linii." };
+
+  const session = await auth();
+  const changedById = session?.user?.id;
+
+  const stops = line.stops.length > 0 ? line.stops : null;
+
+  try {
+    const booking = await db.$transaction(async (tx) => {
+      const created = await tx.booking.create({
+        data: {
+          sourceInquiryId: null,
+          sourceLineId: line.id,
+          customerName: line.name,
+          customerEmail: LINE_ROUTE_POINT_LABEL_PLACEHOLDER,
+          customerPhone: LINE_ROUTE_POINT_LABEL_PLACEHOLDER,
+          startAt: new Date(startAt),
+          endAt: new Date(endAt),
+          finalPrice: Number(finalPrice),
+          status,
+          createdById: changedById,
+          routePoints: {
+            create: stops
+              ? stops.map((stop, index) => ({
+                  sequence: index,
+                  pointType: index === 0 ? "ODBIOR" : index === stops.length - 1 ? "ZWROT" : "PRZYSTANEK",
+                  label: stop.stopName,
+                }))
+              : [
+                  { sequence: 0, pointType: "ODBIOR", label: line.originLabel },
+                  { sequence: 1, pointType: "ZWROT", label: line.destinationLabel },
+                ],
+          },
+        },
+      });
+
+      if (driverId) {
+        const driver = await tx.driver.findUnique({ where: { id: driverId } });
+        if (!driver) throw new Error("DRIVER_NOT_FOUND");
+        await tx.bookingDriver.create({
+          data: {
+            bookingId: created.id,
+            driverId,
+            roleOnTrip: driverRoleOnTrip || null,
+            plannedHours: driverPlannedHours ? Number(driverPlannedHours) : null,
+          },
+        });
+        await tx.bookingAssignmentHistory.create({
+          data: {
+            bookingId: created.id,
+            resourceType: "KIEROWCA",
+            resourceId: driver.id,
+            resourceLabel: `${driver.firstName} ${driver.lastName}`,
+            changeType: "PRZYPISANO",
+            changedById,
+          },
+        });
+      }
+
+      if (busId) {
+        const bus = await tx.bus.findUnique({ where: { id: busId } });
+        if (!bus) throw new Error("BUS_NOT_FOUND");
+        await tx.bookingBus.create({
+          data: {
+            bookingId: created.id,
+            busId,
+            plannedHours: busPlannedHours ? Number(busPlannedHours) : null,
+          },
+        });
+        await tx.bookingAssignmentHistory.create({
+          data: {
+            bookingId: created.id,
+            resourceType: "AUTOBUS",
+            resourceId: bus.id,
+            resourceLabel: `${bus.registrationNumber} — ${bus.brandModel}`,
+            changeType: "PRZYPISANO",
+            changedById,
+          },
+        });
+      }
+
+      return created;
+    });
+
+    revalidatePath("/admin/zlecenia");
+    revalidatePath("/admin/kalendarz");
+    revalidatePath("/admin");
+    return { bookingId: booking.id };
+  } catch (error) {
+    if (error instanceof Error && error.message === "DRIVER_NOT_FOUND") {
+      return { error: "Nie znaleziono wybranego kierowcy." };
+    }
+    if (error instanceof Error && error.message === "BUS_NOT_FOUND") {
+      return { error: "Nie znaleziono wybranego autobusu." };
+    }
+    throw error;
+  }
 }

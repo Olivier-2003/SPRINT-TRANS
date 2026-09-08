@@ -43,6 +43,20 @@ export function bookingCoversDay(start: Date, end: Date, day: Date): boolean {
   return start.getTime() < dayEnd.getTime() && end.getTime() > dayStart.getTime();
 }
 
+/** Czy dany kurs linii regularnej (data zdarzenia) przypada na dany dzień kalendarzowy. */
+export function lineRunIsOnDay(runDate: Date, day: Date): boolean {
+  return (
+    runDate.getFullYear() === day.getFullYear() &&
+    runDate.getMonth() === day.getMonth() &&
+    runDate.getDate() === day.getDate()
+  );
+}
+
+/** Dzień tygodnia w konwencji schematu LineSchedule: 1 = poniedziałek .. 7 = niedziela. */
+export function isoWeekday(date: Date): number {
+  return ((date.getDay() + 6) % 7) + 1;
+}
+
 /** Kolejne dni danego miesiąca (bez dopełnienia do pełnych tygodni) — do widoków tabelarycznych. */
 export function getDaysInMonth(year: number, month: number): Date[] {
   const daysCount = new Date(year, month, 0).getDate();

@@ -18,7 +18,13 @@ export interface DailyWorkEntry {
   date: Date;
   workHours: number;
   nightHours: number;
-  bookings: { bookingId: string; customerName: string; startAt: Date; endAt: Date }[];
+  bookings: {
+    bookingId: string;
+    customerName: string;
+    startAt: Date;
+    endAt: Date;
+    plannedHours: number | null;
+  }[];
   absences: { type: DriverAvailabilityType; note: string | null }[];
 }
 
@@ -80,7 +86,7 @@ export async function getDriverMonthlySummaries(
         startAt: { lt: monthEnd },
         endAt: { gt: monthStart },
       },
-      include: { drivers: { select: { driverId: true } } },
+      include: { drivers: { select: { driverId: true, plannedHours: true } } },
     }),
     db.driverAvailability.findMany({
       where: {
@@ -106,16 +112,28 @@ export async function getDriverMonthlySummaries(
       for (const booking of driverBookings) {
         const segHours = overlapHours(booking.startAt, booking.endAt, dayStart, dayEnd);
         if (segHours > 0) {
-          workHours += segHours;
+          // Ręczna liczba godzin (jeśli ustawiona) zastępuje wyliczenie automatyczne, ale jako
+          // wartość CAŁKOWITA za zlecenie — przypisywana wyłącznie dniu jego rozpoczęcia, żeby
+          // nie rozbijać jednej ręcznie wpisanej liczby na kilka dni w sposób arbitralny.
+          const driverBookingRow = booking.drivers.find((d) => d.driverId === driver.id);
+          const plannedHours =
+            driverBookingRow?.plannedHours != null ? Number(driverBookingRow.plannedHours) : null;
+          const isStartDay = booking.startAt.getTime() >= dayStart.getTime() && booking.startAt.getTime() < dayEnd.getTime();
+          const effectiveHours = plannedHours != null ? (isStartDay ? plannedHours : 0) : segHours;
+
+          workHours += effectiveHours;
           const segStart = new Date(Math.max(booking.startAt.getTime(), dayStart.getTime()));
           const segEnd = new Date(Math.min(booking.endAt.getTime(), dayEnd.getTime()));
           nightHours += nightOverlapHours(segStart, segEnd, dayStart);
-          dayBookings.push({
-            bookingId: booking.id,
-            customerName: booking.customerName,
-            startAt: booking.startAt,
-            endAt: booking.endAt,
-          });
+          if (effectiveHours > 0) {
+            dayBookings.push({
+              bookingId: booking.id,
+              customerName: booking.customerName,
+              startAt: booking.startAt,
+              endAt: booking.endAt,
+              plannedHours,
+            });
+          }
         }
       }
 

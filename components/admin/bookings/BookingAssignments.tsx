@@ -7,7 +7,16 @@ import { AvailableBusesPanel } from "@/components/forms/AvailableBusesPanel";
 import { RemoveEntityButton } from "@/components/forms/RemoveEntityButton";
 import { SwapDriverControl } from "@/components/forms/SwapDriverControl";
 import { SwapBusControl } from "@/components/forms/SwapBusControl";
-import { assignDriver, assignBus, removeDriver, removeBus, swapDriver, swapBus } from "@/lib/actions/bookings";
+import { AssignmentHoursControl } from "@/components/forms/AssignmentHoursControl";
+import {
+  assignDriver,
+  assignBus,
+  removeDriver,
+  removeBus,
+  swapDriver,
+  swapBus,
+  updateAssignmentHours,
+} from "@/lib/actions/bookings";
 import { OVERALL_STATUS_LABELS, OVERALL_STATUS_BADGE_VARIANT } from "@/lib/availability-status-labels";
 import type { DriverAvailabilityResult, BusAvailabilityResult } from "@/lib/availability-engine";
 import type { DriverRecommendation } from "@/lib/driver-recommendation";
@@ -105,6 +114,13 @@ export function BookingAssignments({
                             {OVERALL_STATUS_LABELS[status.status]}
                           </Badge>
                         )}
+                        <AssignmentHoursControl
+                          bookingId={bookingId}
+                          resourceType="driver"
+                          resourceId={assignment.driverId}
+                          plannedHours={assignment.plannedHours != null ? Number(assignment.plannedHours) : null}
+                          action={updateAssignmentHours}
+                        />
                       </div>
                       <div className="flex items-center gap-1">
                         <SwapDriverControl
@@ -166,6 +182,13 @@ export function BookingAssignments({
                             {OVERALL_STATUS_LABELS[status.status]}
                           </Badge>
                         )}
+                        <AssignmentHoursControl
+                          bookingId={bookingId}
+                          resourceType="bus"
+                          resourceId={assignment.busId}
+                          plannedHours={assignment.plannedHours != null ? Number(assignment.plannedHours) : null}
+                          action={updateAssignmentHours}
+                        />
                       </div>
                       <div className="flex items-center gap-1">
                         <SwapBusControl

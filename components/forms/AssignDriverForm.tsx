@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -38,12 +39,13 @@ export function AssignDriverForm({ bookingId, drivers, action }: AssignDriverFor
 
   const {
     control,
+    register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<AssignDriverInput>({
     resolver: zodResolver(assignDriverSchema),
-    defaultValues: { driverId: "", roleOnTrip: "" },
+    defaultValues: { driverId: "", roleOnTrip: "", plannedHours: "" },
   });
 
   const onSubmit = (data: AssignDriverInput) => {
@@ -51,7 +53,7 @@ export function AssignDriverForm({ bookingId, drivers, action }: AssignDriverFor
     startTransition(async () => {
       const result = await action(bookingId, data);
       if (result?.error) setServerError(result.error);
-      else reset({ driverId: "", roleOnTrip: "" });
+      else reset({ driverId: "", roleOnTrip: "", plannedHours: "" });
     });
   };
 
@@ -107,6 +109,17 @@ export function AssignDriverForm({ bookingId, drivers, action }: AssignDriverFor
           </Select>
         )}
       />
+      <div className="flex flex-col gap-1">
+        <Input
+          type="number"
+          step="0.5"
+          min="0"
+          placeholder="Liczba godzin (opcjonalnie)"
+          className="w-44"
+          {...register("plannedHours")}
+        />
+        {errors.plannedHours && <p className="text-sm text-destructive">{errors.plannedHours.message}</p>}
+      </div>
       <Button type="submit" size="sm" disabled={isPending}>
         {isPending ? "Przypisywanie…" : "Przypisz kierowcę"}
       </Button>

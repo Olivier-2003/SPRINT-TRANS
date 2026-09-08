@@ -199,6 +199,7 @@ model RegularLine {
   schedules         LineSchedule[]
   inquiries         Inquiry[]
   driverAssignments DriverLineAssignment[]
+  lineRunBookings   Booking[]
 
   @@map("regular_lines")
 }
@@ -524,6 +525,10 @@ model Booking {
   id              String        @id @default(cuid())
   sourceInquiryId String?       @unique
   sourceInquiry   Inquiry?      @relation(fields: [sourceInquiryId], references: [id])
+  /// Wypełnione, gdy zlecenie to zaplanowany kurs linii regularnej utworzony
+  /// wprost z kalendarza (a nie zapytanie klienta) — patrz createLineRunBooking.
+  sourceLineId    String?
+  sourceLine      RegularLine?  @relation(fields: [sourceLineId], references: [id])
   customerName    String
   customerEmail   String
   customerPhone   String
@@ -560,6 +565,10 @@ model BookingDriver {
   driverId   String
   driver     Driver             @relation(fields: [driverId], references: [id])
   roleOnTrip BookingDriverRole?
+  /// Ręcznie wprowadzona liczba godzin dla tego przypisania — nadpisuje wyliczenie
+  /// automatyczne (Booking.startAt–endAt) w ewidencji czasu pracy (lib/driver-timesheet.ts).
+  /// Puste = brak nadpisania, używana wartość wyliczona z przedziału zlecenia.
+  plannedHours Decimal?         @db.Decimal(5, 1)
 
   @@unique([bookingId, driverId])
   @@map("booking_drivers")
@@ -572,6 +581,9 @@ model BookingBus {
   booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   busId     String
   bus       Bus     @relation(fields: [busId], references: [id])
+  /// Analogicznie do BookingDriver.plannedHours — ręczna liczba godzin pracy autobusu
+  /// na tym zleceniu, gdy różni się od wyliczonej z przedziału startAt–endAt.
+  plannedHours Decimal? @db.Decimal(5, 1)
 
   @@unique([bookingId, busId])
   @@map("booking_buses")

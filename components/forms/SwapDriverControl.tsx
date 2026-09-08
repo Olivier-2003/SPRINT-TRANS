@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -35,6 +36,7 @@ export function SwapDriverControl({
 }: SwapDriverControlProps) {
   const [expanded, setExpanded] = useState(false);
   const [newDriverId, setNewDriverId] = useState("");
+  const [plannedHours, setPlannedHours] = useState("");
   const [error, setError] = useState<string | undefined>();
   const [isPending, startTransition] = useTransition();
 
@@ -48,6 +50,7 @@ export function SwapDriverControl({
       const result = await action(bookingId, currentDriverId, {
         newDriverId,
         roleOnTrip: (currentRole as SwapDriverInput["roleOnTrip"]) ?? "",
+        plannedHours,
       });
       if (result?.error) setError(result.error);
       else setExpanded(false);
@@ -80,6 +83,15 @@ export function SwapDriverControl({
             ))}
           </SelectContent>
         </Select>
+        <Input
+          type="number"
+          step="0.5"
+          min="0"
+          placeholder="Godziny (opcjonalnie)"
+          className="w-36"
+          value={plannedHours}
+          onChange={(e) => setPlannedHours(e.target.value)}
+        />
         <Button type="button" size="sm" onClick={handleSubmit} disabled={isPending}>
           {isPending ? "Zmiana…" : "Zatwierdź"}
         </Button>
