@@ -21,7 +21,7 @@ export function Footer() {
     <footer className="relative border-t border-border bg-white text-muted-foreground">
       <div className="mx-auto grid max-w-[1600px] gap-x-10 gap-y-12 px-6 py-16 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-8 lg:px-8">
         <div className="flex flex-col gap-5 sm:col-span-2 lg:col-span-1">
-          <AnimatedLogo className="h-9" />
+          <AnimatedLogo className="h-16" />
           <p className="max-w-xs text-base leading-relaxed">
             SPRINT-TRANS zajmuje się przewozem osób — linie regularne, wynajem autobusów oraz
             wycieczki. Dane firmy to na razie placeholder, do uzupełnienia przez SPRINT-TRANS.

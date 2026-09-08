@@ -5,6 +5,7 @@ import { ArrowLeftRight, MoveHorizontal, Route } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { CountUp } from "@/components/animations/CountUp";
+import { SectionWaveDivider } from "@/components/animations/SectionWaveDivider";
 import { cn } from "@/lib/utils";
 
 // Prawdziwe przystanki linii SPRINT-TRANS Barcin — Inowrocław, w kolejności trasy.
@@ -29,7 +30,9 @@ export function RouteScheduleSection() {
   const stops = reversed ? [...STOPS].reverse() : STOPS;
 
   return (
-    <section className="relative overflow-hidden bg-[linear-gradient(to_bottom,var(--background)_0%,var(--color-brand-navy)_10%,var(--color-brand-navy)_90%,var(--background)_100%)] py-20 text-white md:py-28">
+    <section className="relative overflow-visible bg-brand-navy py-20 text-white md:py-28">
+      <SectionWaveDivider position="top" fill="var(--color-brand-navy)" />
+      <SectionWaveDivider position="bottom" fill="var(--background)" />
       <div className="relative mx-auto max-w-[1600px] px-6 lg:px-8">
         <ScrollReveal className="mb-14 flex flex-wrap items-end justify-between gap-8">
           <div>

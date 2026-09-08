@@ -45,7 +45,7 @@ export function Navbar() {
     >
       <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-6 py-3 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="SPRINT-TRANS — strona główna">
-          <AnimatedLogo className="h-14" />
+          <AnimatedLogo className="h-16 sm:h-20" />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">
