@@ -44,7 +44,22 @@ export function TripsPreview({ trips }: { trips: TripWithPhotos[] }) {
       </div>
 
       {preview.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Oferta wycieczek będzie prezentowana tutaj wkrótce.</p>
+        <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((n) => (
+            <ScrollReveal key={n} delay={n * 90}>
+              <div className="flex h-full flex-col overflow-hidden rounded-xl border border-dashed border-border">
+                <div className="flex aspect-video flex-col items-center justify-center gap-2 bg-muted text-sm font-medium text-muted-foreground">
+                  <ImageOff className="size-7" />
+                  Zdjęcie wkrótce
+                </div>
+                <div className="flex flex-col gap-1 px-6 pt-5 pb-6">
+                  <p className="text-xl font-semibold text-muted-foreground">Wycieczka — wkrótce</p>
+                  <p className="text-base text-muted-foreground/70">Szczegóły oferty w przygotowaniu.</p>
+                </div>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
       ) : (
         <div className={cn("grid gap-7", gridCols)}>
           {preview.map((trip, i) => (
