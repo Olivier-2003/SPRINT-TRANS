@@ -18,7 +18,7 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative border-t border-brand-navy-border bg-brand-navy text-brand-navy-muted">
+    <footer className="relative border-t border-border bg-white text-muted-foreground">
       <div className="mx-auto grid max-w-[1600px] gap-x-10 gap-y-12 px-6 py-16 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-8 lg:px-8">
         <div className="flex flex-col gap-5 sm:col-span-2 lg:col-span-1">
           <AnimatedLogo className="h-9" />
@@ -29,7 +29,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <h3 className="text-sm font-semibold tracking-[0.15em] text-white uppercase">Dane firmy</h3>
+          <h3 className="text-sm font-semibold tracking-[0.15em] text-foreground uppercase">Dane firmy</h3>
           <dl className="flex flex-col gap-3.5 text-base">
             <div className="flex items-start gap-2.5">
               <MapPin className="mt-0.5 size-5 shrink-0 text-primary" />
@@ -51,13 +51,13 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <h3 className="text-sm font-semibold tracking-[0.15em] text-white uppercase">Szybkie linki</h3>
+          <h3 className="text-sm font-semibold tracking-[0.15em] text-foreground uppercase">Szybkie linki</h3>
           <nav className="flex flex-col gap-3 text-base">
             {QUICK_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="inline-flex w-fit items-center py-2.5 transition-colors hover:text-white"
+                className="inline-flex w-fit items-center py-2.5 transition-colors hover:text-foreground"
               >
                 {link.label}
               </Link>
@@ -66,8 +66,8 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <h3 className="text-sm font-semibold tracking-[0.15em] text-white uppercase">Gdzie nas znajdziesz</h3>
-          <div className="aspect-4/3 overflow-hidden rounded-xl border border-brand-navy-border">
+          <h3 className="text-sm font-semibold tracking-[0.15em] text-foreground uppercase">Gdzie nas znajdziesz</h3>
+          <div className="aspect-4/3 overflow-hidden rounded-xl border border-border">
             <iframe
               src={COMPANY_MAP_EMBED_SRC}
               title="Lokalizacja SPRINT-TRANS na mapie"
@@ -76,35 +76,30 @@ export function Footer() {
               referrerPolicy="no-referrer-when-downgrade"
             />
           </div>
-          <Button
-            render={<Link href="/kontakt" />}
-            nativeButton={false}
-            variant="outline"
-            className="h-11 w-fit border-white/15 bg-transparent text-white hover:bg-white/10 hover:text-white"
-          >
+          <Button render={<Link href="/kontakt" />} nativeButton={false} variant="outline" className="h-11 w-fit">
             Zobacz na mapie
           </Button>
         </div>
       </div>
 
-      <div className="border-t border-brand-navy-border">
+      <div className="border-t border-border">
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3 px-6 py-5 text-sm lg:px-8">
           <p>© {year} SPRINT-TRANS. Wszelkie prawa zastrzeżone.</p>
           <nav className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
-            <Link href="/polityka-prywatnosci" className="inline-flex items-center py-2.5 hover:text-white">
+            <Link href="/polityka-prywatnosci" className="inline-flex items-center py-2.5 hover:text-foreground">
               Polityka prywatności
             </Link>
-            <Link href="/regulamin" className="inline-flex items-center py-2.5 hover:text-white">
+            <Link href="/regulamin" className="inline-flex items-center py-2.5 hover:text-foreground">
               Regulamin
             </Link>
-            <Link href="/admin/login" className="inline-flex items-center py-2.5 hover:text-white">
+            <Link href="/admin/login" className="inline-flex items-center py-2.5 hover:text-foreground">
               Panel administracyjny
             </Link>
             <Link
               href={FACEBOOK_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 py-2.5 hover:text-white"
+              className="inline-flex items-center gap-1 py-2.5 hover:text-foreground"
             >
               Facebook
               <ArrowUpRight className="size-3.5" />

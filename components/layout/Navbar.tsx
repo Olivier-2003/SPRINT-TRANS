@@ -39,10 +39,8 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b transition-colors",
-        scrolled || open
-          ? "border-brand-navy-border bg-brand-navy/95 backdrop-blur supports-backdrop-filter:bg-brand-navy/80"
-          : "border-transparent bg-brand-navy"
+        "sticky top-0 z-50 border-b bg-white transition-shadow",
+        scrolled || open ? "border-border shadow-sm" : "border-transparent"
       )}
     >
       <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-6 py-3 lg:px-8">
@@ -60,8 +58,8 @@ export function Navbar() {
                 className={cn(
                   "rounded-full px-4 py-2.5 text-[15px] font-medium transition-colors",
                   active
-                    ? "bg-white/10 text-white"
-                    : "text-brand-navy-muted hover:bg-white/5 hover:text-white"
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
                 {item.label}
@@ -85,7 +83,7 @@ export function Navbar() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="inline-flex size-10 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 lg:hidden"
+          className="inline-flex size-10 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted lg:hidden"
           aria-label={open ? "Zamknij menu" : "Otwórz menu"}
           aria-expanded={open}
         >
@@ -95,7 +93,7 @@ export function Navbar() {
 
       <div
         className={cn(
-          "overflow-hidden border-t border-brand-navy-border bg-brand-navy transition-[max-height,opacity] duration-300 ease-out lg:hidden",
+          "overflow-hidden border-t border-border bg-white transition-[max-height,opacity] duration-300 ease-out lg:hidden",
           open ? "max-h-[28rem] opacity-100" : "max-h-0 opacity-0"
         )}
       >
@@ -108,7 +106,7 @@ export function Navbar() {
                 href={item.href}
                 className={cn(
                   "rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                  active ? "bg-white/10 text-white" : "text-brand-navy-muted hover:bg-white/5 hover:text-white"
+                  active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
                 {item.label}
