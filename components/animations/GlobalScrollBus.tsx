@@ -5,9 +5,6 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/utils";
 
 interface GlobalScrollBusProps {
-  /** Opcjonalna ścieżka do docelowego, wyciętego zdjęcia autobusu (PNG/WebP
-   *  z przezroczystym tłem) — gdy brak, renderuje lekki placeholder SVG. */
-  src?: string;
   className?: string;
 }
 
@@ -91,7 +88,7 @@ const DERIVATIVE_DELTA = 0.004;
  * - widoczny dopiero od `xl` (1280px) w górę; poniżej tego progu jest ukryty,
  * - przy `prefers-reduced-motion` animacja jest całkowicie wyłączona.
  */
-export function GlobalScrollBus({ src, className }: GlobalScrollBusProps) {
+export function GlobalScrollBus({ className }: GlobalScrollBusProps) {
   const reduced = useReducedMotion();
   const [progress, setProgress] = useState(0);
 
@@ -147,41 +144,59 @@ export function GlobalScrollBus({ src, className }: GlobalScrollBusProps) {
         willChange: "transform, top, left",
       }}
     >
-      {src ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt="" className="h-full w-full object-contain drop-shadow-2xl" />
-      ) : (
-        <MiniBusPlaceholderSvg />
-      )}
+      <ClassicBusIcon />
     </div>
   );
 }
 
 /**
- * Placeholder — mały, stonowany zarys autobusu (bez jaskrawego koloru marki),
- * żeby czytać się jako dyskretny, dekoracyjny akcent, a nie kreskówkowa maskotka.
- * Docelowo podmieniany jednym plikiem, patrz `global-bus-asset.ts`.
+ * Ikona autobusu — czysty, "klasyczny" kształt (sylwetka autokaru z boku) z
+ * gradientem w kolorach marki, zamiast fotograficznego wycinka. Czytelna jako
+ * mały, dekoracyjny akcent w dowolnym miejscu strony, niezależnie od tła pod spodem.
  */
-function MiniBusPlaceholderSvg() {
+function ClassicBusIcon() {
   return (
-    <svg viewBox="0 0 120 56" className="h-full w-full opacity-80 drop-shadow-lg" xmlns="http://www.w3.org/2000/svg">
-      <rect
-        x="6"
-        y="14"
-        width="96"
-        height="30"
-        rx="8"
-        fill="var(--color-brand-navy, #0d1b2e)"
-        fillOpacity="0.85"
-        stroke="white"
-        strokeOpacity="0.55"
-        strokeWidth="1.5"
+    <svg viewBox="0 0 120 56" className="h-full w-full drop-shadow-2xl" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="global-bus-body" x1="0.1" y1="0" x2="0.85" y2="1">
+          <stop offset="0%" stopColor="color-mix(in oklch, var(--color-primary, #2563eb), white 30%)" />
+          <stop offset="55%" stopColor="var(--color-primary, #2563eb)" />
+          <stop offset="100%" stopColor="var(--color-brand-navy, #0d1b2e)" />
+        </linearGradient>
+        <linearGradient id="global-bus-glass" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="white" stopOpacity="0.75" />
+          <stop offset="100%" stopColor="white" stopOpacity="0.25" />
+        </linearGradient>
+        <radialGradient id="global-bus-hub" cx="35%" cy="35%" r="70%">
+          <stop offset="0%" stopColor="#cbd5e1" />
+          <stop offset="60%" stopColor="#475569" />
+          <stop offset="100%" stopColor="#0f172a" />
+        </radialGradient>
+      </defs>
+
+      {/* Sylwetka nadwozia — dziób (przód) po prawej, lekko pochylona szyba. */}
+      <path
+        d="M7,44 L7,27 C7,20 12,14 20,13 L80,13 C86,13 91,15 95,20 L107,33 C110,36.5 111,39.5 110,44 Z"
+        fill="url(#global-bus-body)"
       />
-      <rect x="14" y="20" width="80" height="12" rx="3" fill="white" opacity="0.22" />
-      <circle cx="26" cy="46" r="6" fill="#0d1b2e" />
-      <circle cx="26" cy="46" r="2.5" fill="white" opacity="0.5" />
-      <circle cx="82" cy="46" r="6" fill="#0d1b2e" />
-      <circle cx="82" cy="46" r="2.5" fill="white" opacity="0.5" />
+      {/* Pas szyb */}
+      <path
+        d="M15,20 C15,17.5 17,16 20,16 L79,16 C83,16 87,17.5 90,20.5 L98,28 L15,28 Z"
+        fill="url(#global-bus-glass)"
+      />
+      {/* Przeszklenia — pionowe słupki */}
+      {[30, 45, 60, 75].map((x) => (
+        <line key={x} x1={x} y1="16.5" x2={x} y2="28" stroke="var(--color-brand-navy, #0d1b2e)" strokeOpacity="0.5" strokeWidth="1.4" />
+      ))}
+      {/* Akcentowy pas w kolorze marki */}
+      <rect x="7" y="34" width="103" height="4" fill="white" fillOpacity="0.35" />
+      {/* Reflektor */}
+      <ellipse cx="105" cy="38" rx="3" ry="2.2" fill="#fff3d6" />
+      {/* Koła */}
+      <circle cx="28" cy="46" r="7" fill="#0f172a" />
+      <circle cx="28" cy="46" r="3.4" fill="url(#global-bus-hub)" />
+      <circle cx="90" cy="46" r="7" fill="#0f172a" />
+      <circle cx="90" cy="46" r="3.4" fill="url(#global-bus-hub)" />
     </svg>
   );
 }

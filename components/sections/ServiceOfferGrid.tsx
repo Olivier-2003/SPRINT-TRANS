@@ -36,9 +36,9 @@ export function ServiceOfferGrid() {
         <ScrollReveal
           key={item.title}
           delay={i * 90}
-          className="flex flex-col gap-4 rounded-2xl border border-border/60 bg-card p-7 shadow-sm transition-shadow duration-300 hover:shadow-md"
+          className="group flex flex-col gap-4 rounded-2xl border border-border/60 bg-card p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg"
         >
-          <div className="flex size-14 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+          <div className="flex size-14 items-center justify-center rounded-xl bg-[linear-gradient(135deg,color-mix(in_oklch,var(--color-primary),white_18%)_0%,var(--color-primary)_60%,color-mix(in_oklch,var(--color-primary),black_20%)_100%)] text-primary-foreground shadow-[0_8px_16px_-6px_color-mix(in_oklch,var(--color-primary),transparent_35%)] transition-transform duration-300 group-hover:scale-110">
             <item.icon className="size-6" />
           </div>
           <h3 className="text-xl font-semibold tracking-tight text-foreground">{item.title}</h3>
