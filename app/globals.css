@@ -146,6 +146,29 @@
   }
 }
 
+/* Kropka "podróżująca" wzdłuż linii trasy (RouteScheduleSection) — czysto
+   dekoracyjna sugestia ruchu, wyłączana globalnie przez prefers-reduced-motion
+   (patrz reguła niżej, zeruje animation-duration wszędzie). */
+@keyframes route-travel {
+  0% {
+    left: 0%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+.route-travel-dot {
+  animation: route-travel 4.5s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

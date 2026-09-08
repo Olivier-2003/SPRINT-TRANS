@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeftRight, MoveHorizontal } from "lucide-react";
+import { ArrowLeftRight, MoveHorizontal, Route } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
+import { CountUp } from "@/components/animations/CountUp";
 import { cn } from "@/lib/utils";
 
 // Prawdziwe przystanki linii SPRINT-TRANS Barcin — Inowrocław, w kolejności trasy.
@@ -28,9 +29,9 @@ export function RouteScheduleSection() {
   const stops = reversed ? [...STOPS].reverse() : STOPS;
 
   return (
-    <section className="relative overflow-hidden border-t border-white/10 bg-brand-navy py-20 text-white md:py-28">
+    <section className="relative overflow-hidden bg-[linear-gradient(to_bottom,var(--background)_0%,var(--color-brand-navy)_10%,var(--color-brand-navy)_90%,var(--background)_100%)] py-20 text-white md:py-28">
       <div className="relative mx-auto max-w-[1600px] px-6 lg:px-8">
-        <ScrollReveal className="mb-14 flex flex-wrap items-end justify-between gap-6">
+        <ScrollReveal className="mb-14 flex flex-wrap items-end justify-between gap-8">
           <div>
             <span className="text-sm font-semibold tracking-[0.2em] text-brand-navy-muted uppercase">
               Trasa przejazdu
@@ -39,10 +40,24 @@ export function RouteScheduleSection() {
               Linia łącząca Barcin z Inowrocławiem
             </h2>
             <p className="mt-4 max-w-2xl text-lg leading-relaxed text-brand-navy-muted">
-              Nasza regularna linia pokonuje trasę między Barcinem a Inowrocławiem,
-              zatrzymując się po drodze na 13 przystankach.
+              Nasza regularna linia pokonuje trasę między Barcinem a Inowrocławiem, zatrzymując się po drodze na
+              wielu przystankach.
             </p>
           </div>
+          <div className="flex items-center gap-4 rounded-2xl bg-white/5 px-6 py-4 ring-1 ring-white/10">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary">
+              <Route className="size-6" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-3xl font-extrabold tracking-tight text-white">
+                <CountUp target={STOPS.length} />
+              </span>
+              <span className="text-sm font-medium text-brand-navy-muted">przystanków na trasie</span>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal className="mb-8 flex justify-end">
           <Button
             type="button"
             onClick={() => setReversed((v) => !v)}
@@ -62,6 +77,11 @@ export function RouteScheduleSection() {
                 <div
                   aria-hidden="true"
                   className="absolute top-6 right-6 left-6 h-px bg-white/15"
+                />
+                {/* Kropka sugerująca kurs autobusu wzdłuż trasy — czysto dekoracyjna. */}
+                <div
+                  aria-hidden="true"
+                  className="route-travel-dot pointer-events-none absolute top-6 z-10 size-2.5 -translate-y-1/2 rounded-full bg-primary shadow-[0_0_10px_2px_var(--color-primary)]"
                 />
                 {stops.map((stop, i) => {
                   const endpoint = i === 0 || i === stops.length - 1;

@@ -7,7 +7,9 @@ const FACEBOOK_URL = "https://www.facebook.com/sprinttranspiechcin";
 
 export function FacebookCta() {
   return (
-    <section className="relative overflow-hidden bg-brand-navy py-16 text-white md:py-20">
+    <section
+      className="relative overflow-hidden bg-[linear-gradient(to_bottom,var(--background)_0%,var(--color-brand-navy)_14%,var(--color-brand-navy)_86%,var(--background)_100%)] py-16 text-white md:py-20"
+    >
       <div
         aria-hidden="true"
         className="absolute top-1/2 left-1/2 size-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/20 blur-3xl"
