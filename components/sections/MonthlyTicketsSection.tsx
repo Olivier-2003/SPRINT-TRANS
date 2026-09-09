@@ -50,10 +50,12 @@ export function MonthlyTicketsSection() {
             <ScrollReveal
               key={item.title}
               delay={i * 90}
-              className="flex h-full flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors duration-300 hover:bg-white/10"
+              className="group flex h-full flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-6 transition-all duration-300 hover:-translate-y-1 hover:bg-white/10"
             >
-              <div className="flex size-14 items-center justify-center rounded-2xl bg-white/10 text-white">
-                <item.icon className="size-6" />
+              <div className="icon-float w-fit">
+                <div className="flex size-14 items-center justify-center rounded-2xl bg-white/10 text-white transition-transform duration-300 group-hover:scale-110">
+                  <item.icon className="size-6" />
+                </div>
               </div>
               <h3 className="text-lg font-semibold">{item.title}</h3>
               <p className="text-sm leading-relaxed text-brand-navy-muted">{item.description}</p>

@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { ServiceOfferGrid } from "@/components/sections/ServiceOfferGrid";
 import { ContactCta } from "@/components/sections/ContactCta";
+import { SectionWaveDivider } from "@/components/animations/SectionWaveDivider";
+import { CountUp } from "@/components/animations/CountUp";
 import { getPublicLines } from "@/lib/data/lines";
 import { getPublicTrips } from "@/lib/data/trips";
 import { getPublicBuses } from "@/lib/data/buses";
@@ -42,8 +44,9 @@ export default async function OfferPage() {
 
   return (
     <div className="flex-1">
-      <section className="relative overflow-hidden bg-brand-navy py-16 text-white md:py-24">
-        <div className="mx-auto grid max-w-[1600px] items-center gap-12 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:px-8">
+      <section className="relative overflow-visible bg-brand-navy py-16 text-white md:py-24">
+        <SectionWaveDivider position="bottom" fill="var(--background)" />
+        <div className="relative mx-auto grid max-w-[1600px] items-center gap-12 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:px-8">
           <div>
             <span className="text-sm font-semibold tracking-[0.2em] text-brand-navy-muted uppercase">
               Oferta
@@ -56,18 +59,24 @@ export default async function OfferPage() {
               wszystko w jednym miejscu.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4">
-                <div className="text-3xl font-bold">{buses.length}</div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 transition-colors duration-300 hover:bg-white/10">
+                <div className="text-3xl font-bold">
+                  <CountUp target={buses.length} />
+                </div>
                 <div className="text-sm text-brand-navy-muted">autobusów we flocie</div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4">
-                <div className="text-3xl font-bold">{lines.length}</div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 transition-colors duration-300 hover:bg-white/10">
+                <div className="text-3xl font-bold">
+                  <CountUp target={lines.length} />
+                </div>
                 <div className="text-sm text-brand-navy-muted">
                   {lines.length === 1 ? "linia regularna" : "linii regularnych"}
                 </div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4">
-                <div className="text-3xl font-bold">{trips.length}</div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 transition-colors duration-300 hover:bg-white/10">
+                <div className="text-3xl font-bold">
+                  <CountUp target={trips.length} />
+                </div>
                 <div className="text-sm text-brand-navy-muted">
                   {trips.length === 1 ? "aktywna wycieczka" : "aktywnych wycieczek"}
                 </div>

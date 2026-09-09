@@ -45,19 +45,21 @@ export function WhyTrustUsSection() {
             key={reason.title}
             delay={i * 90}
             className={cn(
-              "flex flex-col gap-4 rounded-2xl p-7 shadow-sm",
+              "group flex flex-col gap-4 rounded-2xl p-7 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl",
               reason.highlighted
                 ? "bg-brand-navy text-white"
-                : "border border-border/60 bg-card text-foreground"
+                : "border border-border/60 bg-card text-foreground hover:border-primary/30"
             )}
           >
-            <div
-              className={cn(
-                "flex size-14 items-center justify-center rounded-xl",
-                reason.highlighted ? "bg-white/15 text-white" : "bg-primary text-primary-foreground"
-              )}
-            >
-              <reason.icon className="size-6" />
+            <div className="icon-float w-fit">
+              <div
+                className={cn(
+                  "flex size-14 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110",
+                  reason.highlighted ? "bg-white/15 text-white" : "bg-primary text-primary-foreground"
+                )}
+              >
+                <reason.icon className="size-6" />
+              </div>
             </div>
             <h3 className="text-xl font-semibold tracking-tight">{reason.title}</h3>
             <p

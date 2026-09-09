@@ -27,9 +27,9 @@ export function ReferencesSection() {
           <ScrollReveal
             key={ref.name}
             delay={i * 90}
-            className="flex flex-col items-center gap-4 rounded-2xl border border-border/60 bg-card p-8 text-center shadow-sm"
+            className="group flex flex-col items-center gap-4 rounded-2xl border border-border/60 bg-card p-8 text-center shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-lg"
           >
-            <div className="flex size-16 items-center justify-center rounded-full bg-muted text-xl font-bold text-foreground">
+            <div className="icon-float flex size-16 items-center justify-center rounded-full bg-muted text-xl font-bold text-foreground transition-transform duration-300 group-hover:scale-110">
               {ref.name.charAt(0)}
             </div>
             <h3 className="text-lg font-semibold tracking-tight text-foreground">{ref.name}</h3>
