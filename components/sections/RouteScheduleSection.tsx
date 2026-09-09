@@ -32,7 +32,7 @@ export function RouteScheduleSection() {
   return (
     <section className="relative overflow-visible bg-brand-navy py-20 text-white md:py-28">
       <SectionWaveDivider position="top" fill="var(--color-brand-navy)" />
-      <SectionWaveDivider position="bottom" fill="var(--background)" />
+      <SectionWaveDivider position="bottom" fill="var(--color-brand-navy)" />
       <div
         aria-hidden="true"
         className="absolute top-1/4 left-0 size-80 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl"

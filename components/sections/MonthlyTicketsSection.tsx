@@ -36,7 +36,7 @@ export function MonthlyTicketsSection() {
   return (
     <section id="bilety-miesieczne" className="relative overflow-visible bg-brand-navy py-16 text-white md:py-24">
       <SectionWaveDivider position="top" fill="var(--color-brand-navy)" />
-      <SectionWaveDivider position="bottom" fill="var(--background)" />
+      <SectionWaveDivider position="bottom" fill="var(--color-brand-navy)" />
       <div
         aria-hidden="true"
         className="absolute top-0 right-1/4 size-72 -translate-y-1/2 rounded-full bg-primary/20 blur-3xl"

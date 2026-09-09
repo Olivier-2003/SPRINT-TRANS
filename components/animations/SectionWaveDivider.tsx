@@ -1,5 +1,11 @@
 interface SectionWaveDividerProps {
-  /** Kolor wypełnienia fali — zwykle kolor sekcji, do której fala "wprowadza". */
+  /**
+   * Kolor wypełnienia fali — ZAWSZE kolor sekcji, DO KTÓREJ ten divider
+   * należy (nie sekcji sąsiedniej!). Płaska krawędź fali styka się bez szwu
+   * z tą sekcją; druga, falująca krawędź jest transparentna i odsłania to,
+   * co znajduje się za nią (naturalnie tło sekcji sąsiedniej) — stąd nie
+   * trzeba (i nie należy) podawać koloru sekcji sąsiedniej.
+   */
   fill: string;
   /** "top" = fala nad górną krawędzią sekcji, "bottom" = fala pod dolną krawędzią. */
   position: "top" | "bottom";
