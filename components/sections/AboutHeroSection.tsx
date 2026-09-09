@@ -16,7 +16,6 @@ export function AboutHeroSection() {
     <section className="relative mx-auto max-w-[1600px] px-6 pt-14 pb-10 md:pt-20 md:pb-14 lg:px-8">
       <div className="grid gap-12 lg:grid-cols-[1fr_1fr] lg:items-center lg:gap-16">
         <ScrollReveal className="flex flex-col gap-6">
-          <span className="text-sm font-semibold tracking-[0.2em] text-primary uppercase">O firmie</span>
           <h1 className="max-w-xl text-4xl font-bold tracking-tight sm:text-5xl">
             Poznaj SPRINT-TRANS
           </h1>

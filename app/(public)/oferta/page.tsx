@@ -48,10 +48,7 @@ export default async function OfferPage() {
         <SectionWaveDivider position="bottom" fill="var(--background)" />
         <div className="relative mx-auto grid max-w-[1600px] items-center gap-12 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:px-8">
           <div>
-            <span className="text-sm font-semibold tracking-[0.2em] text-brand-navy-muted uppercase">
-              Oferta
-            </span>
-            <h1 className="mt-3 max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
+            <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
               Oferta przewozów SPRINT-TRANS
             </h1>
             <p className="mt-4 max-w-2xl text-lg leading-relaxed text-brand-navy-muted">
