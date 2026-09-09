@@ -185,6 +185,41 @@
   animation: icon-float 3.2s ease-in-out infinite;
 }
 
+/* "Rysowanie się" logo przy pierwszym załadowaniu — logo to plik PNG (nie
+   wektor ze ścieżkami), więc zamiast prawdziwego stroke-draw używamy
+   odsłaniania od lewej do prawej z podświetloną krawędzią "pisaka", co daje
+   podobne wrażenie. Uruchamia się raz, przy montowaniu (patrz AnimatedLogo). */
+@keyframes logo-reveal-clip {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0% 0 0);
+  }
+}
+@keyframes logo-reveal-tip {
+  0% {
+    left: 0%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+.logo-reveal-img {
+  animation: logo-reveal-clip 1.3s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+.logo-reveal-tip {
+  animation: logo-reveal-tip 1.3s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
