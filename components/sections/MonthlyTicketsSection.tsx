@@ -35,7 +35,7 @@ export function MonthlyTicketsSection() {
   return (
     <section id="bilety-miesieczne" className="relative bg-brand-navy py-16 text-white md:py-24">
       <div className="mx-auto max-w-[1600px] px-6 lg:px-8">
-        <ScrollReveal className="mb-12 flex flex-col gap-3">
+        <ScrollReveal className="mb-12 flex flex-col items-center gap-3 text-center">
           <span className="text-sm font-semibold tracking-[0.2em] text-brand-navy-muted uppercase">
             Dojazdy regularne
           </span>

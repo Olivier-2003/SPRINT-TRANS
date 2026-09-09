@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ImageOff } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Trip, TripPhoto } from "@/lib/generated/prisma/client";
 
@@ -7,9 +8,20 @@ type TripWithPhotos = Trip & { photos: TripPhoto[] };
 export function TripsGrid({ trips }: { trips: TripWithPhotos[] }) {
   if (trips.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground">
-        Oferta wycieczek będzie prezentowana tutaj wkrótce.
-      </p>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {[1, 2, 3].map((n) => (
+          <div key={n} className="overflow-hidden rounded-xl border border-dashed border-border">
+            <div className="flex aspect-video flex-col items-center justify-center gap-2 bg-muted text-sm font-medium text-muted-foreground">
+              <ImageOff className="size-7" />
+              Zdjęcie wkrótce
+            </div>
+            <div className="flex flex-col gap-1 p-4">
+              <p className="text-base font-semibold text-muted-foreground">Wycieczka — wkrótce</p>
+              <p className="text-sm text-muted-foreground/70">Szczegóły oferty w przygotowaniu.</p>
+            </div>
+          </div>
+        ))}
+      </div>
     );
   }
 

@@ -3,20 +3,29 @@ import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
+import { SectionWaveDivider } from "@/components/animations/SectionWaveDivider";
 import { MonthlyTicketsSection } from "@/components/sections/MonthlyTicketsSection";
 import { TIMETABLES } from "@/lib/timetables";
 
 export default function SchedulePage() {
   return (
     <div className="flex flex-1 flex-col">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-14 md:py-16">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Rozkład jazdy linii regularnych</h1>
-          <p className="text-lg text-muted-foreground">
+      <section className="relative overflow-visible bg-brand-navy py-16 text-white md:py-24">
+        <SectionWaveDivider position="bottom" fill="var(--background)" />
+        <div className="relative mx-auto flex max-w-[1600px] flex-col items-center gap-4 px-6 text-center lg:px-8">
+          <span className="text-sm font-semibold tracking-[0.2em] text-brand-navy-muted uppercase">
+            Rozkład jazdy
+          </span>
+          <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
+            Rozkład jazdy linii regularnych
+          </h1>
+          <p className="max-w-2xl text-lg leading-relaxed text-brand-navy-muted">
             Wybierz kierunek, aby zobaczyć aktualny rozkład jazdy.
           </p>
         </div>
+      </section>
 
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-14 md:py-16">
         <div className="grid gap-6 sm:grid-cols-2">
           {TIMETABLES.map((timetable) => (
             <ScrollReveal key={timetable.id}>

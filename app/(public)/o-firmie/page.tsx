@@ -11,7 +11,7 @@ export default function AboutPage() {
       <AboutHeroSection />
 
       <section className="relative mx-auto max-w-[1600px] px-6 py-14 md:py-20 lg:px-8">
-        <ScrollReveal className="mb-10 flex flex-col gap-3">
+        <ScrollReveal className="mb-10 flex flex-col items-center gap-3 text-center">
           <span className="text-sm font-semibold tracking-[0.2em] text-primary uppercase">Co robimy</span>
           <h2 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">Nasze usługi</h2>
         </ScrollReveal>
