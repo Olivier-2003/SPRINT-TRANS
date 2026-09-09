@@ -50,7 +50,7 @@ export function Navbar() {
           niewidoczny — biała "mgiełka" działa niezależnie od tła pod spodem. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-full h-10 bg-gradient-to-b from-white/70 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-full h-5 bg-gradient-to-b from-white/25 via-white/8 to-transparent"
       />
       <div
         className={cn(
