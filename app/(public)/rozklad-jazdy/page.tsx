@@ -12,6 +12,14 @@ export default function SchedulePage() {
     <div className="flex flex-1 flex-col">
       <section className="relative overflow-visible bg-brand-navy py-16 text-white md:py-24">
         <SectionWaveDivider position="bottom" fill="var(--background)" />
+        <div
+          aria-hidden="true"
+          className="absolute top-0 left-1/5 size-72 -translate-y-1/2 rounded-full bg-primary/20 blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute right-1/4 bottom-0 size-56 translate-y-1/3 rounded-full bg-primary/15 blur-3xl"
+        />
         <div className="relative mx-auto flex max-w-[1600px] flex-col items-center gap-4 px-6 text-center lg:px-8">
           <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
             Rozkład jazdy linii regularnych

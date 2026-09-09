@@ -33,6 +33,14 @@ export function RouteScheduleSection() {
     <section className="relative overflow-visible bg-brand-navy py-20 text-white md:py-28">
       <SectionWaveDivider position="top" fill="var(--color-brand-navy)" />
       <SectionWaveDivider position="bottom" fill="var(--background)" />
+      <div
+        aria-hidden="true"
+        className="absolute top-1/4 left-0 size-80 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute right-0 bottom-1/4 size-72 translate-x-1/2 rounded-full bg-primary/15 blur-3xl"
+      />
       <div className="relative mx-auto max-w-[1600px] px-6 lg:px-8">
         <ScrollReveal className="mb-16 flex flex-col items-center gap-7 text-center">
           <span className="text-base font-semibold tracking-[0.2em] text-brand-navy-muted uppercase">

@@ -43,9 +43,14 @@ export function Navbar() {
         scrolled || open ? "border-border shadow-sm" : "border-transparent"
       )}
     >
-      <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-6 py-3 lg:px-8">
+      <div
+        className={cn(
+          "mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-6 transition-[padding] duration-300 lg:px-8",
+          scrolled ? "py-2" : "py-3"
+        )}
+      >
         <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="SPRINT-TRANS — strona główna">
-          <AnimatedLogo className="h-16 sm:h-20" />
+          <AnimatedLogo className={cn("transition-[height] duration-300", scrolled ? "h-12 sm:h-14" : "h-16 sm:h-20")} />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">
