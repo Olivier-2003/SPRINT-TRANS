@@ -85,7 +85,7 @@ const DERIVATIVE_DELTA = 0.004;
  * korzystaniu ze strony:
  * - `position: fixed`, więc nie wpływa na wysokość/układ żadnej sekcji,
  * - `pointer-events-none` — nigdy nie przechwytuje kliknięć/interakcji,
- * - widoczny dopiero od `xl` (1280px) w górę; poniżej tego progu jest ukryty,
+ * - widoczny na wszystkich szerokościach, mniejszy na mobile (rośnie z breakpointami),
  * - przy `prefers-reduced-motion` animacja jest całkowicie wyłączona.
  */
 export function GlobalScrollBus({ className }: GlobalScrollBusProps) {
@@ -131,7 +131,7 @@ export function GlobalScrollBus({ className }: GlobalScrollBusProps) {
     <div
       aria-hidden="true"
       className={cn(
-        "pointer-events-none fixed z-40 hidden w-40 -translate-x-1/2 -translate-y-1/2 select-none xl:block",
+        "pointer-events-none fixed z-40 w-24 -translate-x-1/2 -translate-y-1/2 select-none sm:w-28 lg:w-32 xl:w-40",
         className
       )}
       style={{

@@ -37,13 +37,7 @@ export function TestimonialsSection() {
       </ScrollReveal>
 
       <ScrollReveal className="relative -mx-6 lg:mx-0">
-        <div
-          className="overflow-hidden"
-          style={{
-            maskImage: "linear-gradient(to right, transparent, black 6%, black 94%, transparent)",
-            WebkitMaskImage: "linear-gradient(to right, transparent, black 6%, black 94%, transparent)",
-          }}
-        >
+        <div className="overflow-hidden">
           <div className="testimonials-track flex w-max gap-6 px-6">
             {MARQUEE_ITEMS.map((t, i) => (
               <Card
