@@ -43,11 +43,15 @@ export function Navbar() {
         scrolled || open ? "border-border shadow-sm" : "border-transparent"
       )}
     >
-      {/* Delikatny cień pod paskiem, zawsze widoczny (nie tylko po scrollu) —
-          zmiękcza krawędź nawigacji nad granatowymi sekcjami hero bez użycia
-          koloru (sam kolorowy gradient granat/biel już raz wyglądał
-          "rozmazanie" i został odrzucony). */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-full h-6 bg-gradient-to-b from-black/10 to-transparent" />
+      {/* Zmiękczenie dolnej krawędzi paska — biel PASKA zanika w przezroczystość
+          (jeden kolor, tylko alfa), a nie miesza się z kolorem sekcji pod
+          spodem (to już raz wyglądało "brudno" i zostało odrzucone). Czarny
+          cień nie działał tutaj, bo na ciemnogranatowym hero jest praktycznie
+          niewidoczny — biała "mgiełka" działa niezależnie od tła pod spodem. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-full h-10 bg-gradient-to-b from-white/70 to-transparent"
+      />
       <div
         className={cn(
           "mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-6 transition-[padding] duration-300 lg:px-8",
