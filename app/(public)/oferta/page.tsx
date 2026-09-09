@@ -43,34 +43,45 @@ export default async function OfferPage() {
   return (
     <div className="flex-1">
       <section className="relative overflow-hidden bg-brand-navy py-16 text-white md:py-24">
-        <div className="mx-auto max-w-[1600px] px-6 lg:px-8">
-          <span className="text-sm font-semibold tracking-[0.2em] text-brand-navy-muted uppercase">
-            Oferta
-          </span>
-          <h1 className="mt-3 max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
-            Oferta przewozów SPRINT-TRANS
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg leading-relaxed text-brand-navy-muted">
-            Linie regularne, wynajem autobusów oraz zorganizowane wycieczki —
-            wszystko w jednym miejscu.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-4">
-            <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4">
-              <div className="text-3xl font-bold">{buses.length}</div>
-              <div className="text-sm text-brand-navy-muted">autobusów we flocie</div>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4">
-              <div className="text-3xl font-bold">{lines.length}</div>
-              <div className="text-sm text-brand-navy-muted">
-                {lines.length === 1 ? "linia regularna" : "linii regularnych"}
+        <div className="mx-auto grid max-w-[1600px] items-center gap-12 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:px-8">
+          <div>
+            <span className="text-sm font-semibold tracking-[0.2em] text-brand-navy-muted uppercase">
+              Oferta
+            </span>
+            <h1 className="mt-3 max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
+              Oferta przewozów SPRINT-TRANS
+            </h1>
+            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-brand-navy-muted">
+              Linie regularne, wynajem autobusów oraz zorganizowane wycieczki —
+              wszystko w jednym miejscu.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4">
+                <div className="text-3xl font-bold">{buses.length}</div>
+                <div className="text-sm text-brand-navy-muted">autobusów we flocie</div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4">
+                <div className="text-3xl font-bold">{lines.length}</div>
+                <div className="text-sm text-brand-navy-muted">
+                  {lines.length === 1 ? "linia regularna" : "linii regularnych"}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4">
+                <div className="text-3xl font-bold">{trips.length}</div>
+                <div className="text-sm text-brand-navy-muted">
+                  {trips.length === 1 ? "aktywna wycieczka" : "aktywnych wycieczek"}
+                </div>
               </div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4">
-              <div className="text-3xl font-bold">{trips.length}</div>
-              <div className="text-sm text-brand-navy-muted">
-                {trips.length === 1 ? "aktywna wycieczka" : "aktywnych wycieczek"}
-              </div>
-            </div>
+          </div>
+          <div className="relative mx-auto w-full max-w-sm lg:max-w-none">
+            <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-[linear-gradient(135deg,color-mix(in_oklch,var(--color-primary),white_18%),var(--color-primary))] opacity-20 blur-2xl" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/oferta/oferta-hero-bus.png"
+              alt="Autobus SPRINT-TRANS w trasie"
+              className="aspect-square w-full rounded-3xl object-cover shadow-2xl ring-1 ring-white/15"
+            />
           </div>
         </div>
       </section>
