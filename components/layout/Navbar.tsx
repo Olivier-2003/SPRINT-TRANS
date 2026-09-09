@@ -43,6 +43,11 @@ export function Navbar() {
         scrolled || open ? "border-border shadow-sm" : "border-transparent"
       )}
     >
+      {/* Delikatny cień pod paskiem, zawsze widoczny (nie tylko po scrollu) —
+          zmiękcza krawędź nawigacji nad granatowymi sekcjami hero bez użycia
+          koloru (sam kolorowy gradient granat/biel już raz wyglądał
+          "rozmazanie" i został odrzucony). */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-full h-6 bg-gradient-to-b from-black/10 to-transparent" />
       <div
         className={cn(
           "mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-6 transition-[padding] duration-300 lg:px-8",
