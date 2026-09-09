@@ -7,7 +7,6 @@ import { ContactCta } from "@/components/sections/ContactCta";
 import { SectionWaveDivider } from "@/components/animations/SectionWaveDivider";
 import { CountUp } from "@/components/animations/CountUp";
 import { getPublicLines } from "@/lib/data/lines";
-import { getPublicTrips } from "@/lib/data/trips";
 import { getPublicBuses } from "@/lib/data/buses";
 
 export const dynamic = "force-dynamic";
@@ -36,17 +35,13 @@ const STEPS = [
 ];
 
 export default async function OfferPage() {
-  const [lines, trips, buses] = await Promise.all([
-    getPublicLines(),
-    getPublicTrips(),
-    getPublicBuses(),
-  ]);
+  const [lines, buses] = await Promise.all([getPublicLines(), getPublicBuses()]);
 
   return (
     <div className="flex-1">
       <section className="relative overflow-visible bg-brand-navy py-16 text-white md:py-24">
         <SectionWaveDivider position="bottom" fill="var(--color-brand-navy)" />
-        <div className="relative mx-auto grid max-w-[1600px] items-center gap-12 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:px-8">
+        <div className="relative mx-auto grid max-w-[1600px] items-center gap-12 px-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16 lg:px-8">
           <div>
             <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
               Oferta przewozów SPRINT-TRANS
@@ -70,18 +65,10 @@ export default async function OfferPage() {
                   {lines.length === 1 ? "linia regularna" : "linii regularnych"}
                 </div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 transition-colors duration-300 hover:bg-white/10">
-                <div className="text-3xl font-bold">
-                  <CountUp target={trips.length} />
-                </div>
-                <div className="text-sm text-brand-navy-muted">
-                  {trips.length === 1 ? "aktywna wycieczka" : "aktywnych wycieczek"}
-                </div>
-              </div>
             </div>
           </div>
-          <div className="relative mx-auto w-full max-w-sm lg:mx-0 lg:ml-auto lg:max-w-md">
-            <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-[linear-gradient(135deg,color-mix(in_oklch,var(--color-primary),white_18%),var(--color-primary))] opacity-20 blur-2xl" />
+          <div className="relative mx-auto w-full max-w-2xl lg:mx-0 lg:ml-auto lg:max-w-none">
+            <div className="absolute -inset-6 -z-10 rounded-[2.5rem] bg-[linear-gradient(135deg,color-mix(in_oklch,var(--color-primary),white_18%),var(--color-primary))] opacity-20 blur-3xl" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/oferta/oferta-hero-bus.png"
