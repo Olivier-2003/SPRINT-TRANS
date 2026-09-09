@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Percent, Ticket, RefreshCw, Copy, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
+import { SectionWaveDivider } from "@/components/animations/SectionWaveDivider";
 
 const TICKET_ITEMS = [
   {
@@ -33,7 +34,9 @@ const TICKET_ITEMS = [
  */
 export function MonthlyTicketsSection() {
   return (
-    <section id="bilety-miesieczne" className="relative overflow-hidden bg-brand-navy py-16 text-white md:py-24">
+    <section id="bilety-miesieczne" className="relative overflow-visible bg-brand-navy py-16 text-white md:py-24">
+      <SectionWaveDivider position="top" fill="var(--color-brand-navy)" />
+      <SectionWaveDivider position="bottom" fill="var(--background)" />
       <div
         aria-hidden="true"
         className="absolute top-0 right-1/4 size-72 -translate-y-1/2 rounded-full bg-primary/20 blur-3xl"
