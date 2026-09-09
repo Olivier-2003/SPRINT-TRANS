@@ -169,6 +169,22 @@
   animation: route-travel 4.5s ease-in-out infinite;
 }
 
+/* Delikatne, ciągłe "unoszenie się" ikon w kartach oferty (ServiceOfferGrid) —
+   subtelny akcent życia w statycznej siatce kart, wyłączany globalnie przez
+   prefers-reduced-motion (patrz reguła niżej). */
+@keyframes icon-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+.icon-float {
+  animation: icon-float 3.2s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
