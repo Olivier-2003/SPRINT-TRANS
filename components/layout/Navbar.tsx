@@ -54,11 +54,15 @@ export function Navbar() {
       />
       <div
         className={cn(
-          "mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-6 transition-[padding] duration-300 lg:px-8",
+          "relative mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-6 transition-[padding] duration-300 lg:px-8",
           scrolled ? "py-2" : "py-3"
         )}
       >
-        <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="SPRINT-TRANS — strona główna">
+        <Link
+          href="/"
+          className="absolute left-1/2 z-10 flex shrink-0 -translate-x-1/2 items-center gap-2 lg:static lg:translate-x-0"
+          aria-label="SPRINT-TRANS — strona główna"
+        >
           <AnimatedLogo className={cn("transition-[height] duration-300", scrolled ? "h-12 sm:h-14" : "h-16 sm:h-20")} />
         </Link>
 
@@ -97,7 +101,7 @@ export function Navbar() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="inline-flex size-10 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted lg:hidden"
+          className="relative z-10 ml-auto inline-flex size-10 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted lg:hidden"
           aria-label={open ? "Zamknij menu" : "Otwórz menu"}
           aria-expanded={open}
         >
