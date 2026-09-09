@@ -39,7 +39,7 @@ export default async function OfferPage() {
 
   return (
     <div className="flex-1">
-      <section className="relative overflow-visible bg-brand-navy py-16 text-white md:py-24">
+      <section className="relative overflow-visible bg-brand-navy py-8 text-white md:py-12">
         <SectionWaveDivider position="bottom" fill="var(--color-brand-navy)" />
         <div className="relative mx-auto grid max-w-[1600px] items-center gap-12 px-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16 lg:px-8">
           <div>

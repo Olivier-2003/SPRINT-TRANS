@@ -7,7 +7,7 @@ import { CountUp } from "@/components/animations/CountUp";
 export default function FleetPage() {
   return (
     <div className="flex-1">
-      <section className="relative overflow-visible bg-brand-navy py-16 text-white md:py-24">
+      <section className="relative overflow-visible bg-brand-navy py-8 text-white md:py-12">
         <SectionWaveDivider position="bottom" fill="var(--color-brand-navy)" />
         <div
           aria-hidden="true"
