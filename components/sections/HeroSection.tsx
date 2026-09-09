@@ -6,6 +6,7 @@ import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { CinematicRoadBackdrop } from "@/components/animations/CinematicRoadBackdrop";
 import { HERO_ASSETS } from "@/components/sections/hero-assets";
 import { publicAssetExists } from "@/lib/public-assets";
+import { SectionWaveDivider } from "@/components/animations/SectionWaveDivider";
 
 /**
  * Hero strony głównej. Docelowe tło pochodzi z `public/hero/hero-bg.jpg`
@@ -20,7 +21,12 @@ export function HeroSection() {
   const hasBackdrop = publicAssetExists(HERO_ASSETS.backdropPath);
 
   return (
-    <section className="relative overflow-hidden bg-brand-navy pt-16 pb-40 text-white sm:pt-24 sm:pb-48 md:pt-28 md:pb-56 lg:pt-32 lg:pb-64">
+    <div className="relative">
+      {/* Poza `overflow-hidden` sekcji (potrzebnym do przycięcia warstw tła
+          poniżej) — inaczej translacja divider'a ponad górną krawędź sekcji
+          zostałaby obcięta. */}
+      <SectionWaveDivider position="top" fill="var(--color-brand-navy)" />
+      <section className="relative overflow-hidden bg-brand-navy pt-16 pb-40 text-white sm:pt-24 sm:pb-48 md:pt-28 md:pb-56 lg:pt-32 lg:pb-64">
       {/* Warstwa tła — docelowe kinowe zdjęcie drogi (public/hero/hero-bg.jpg) albo
           ilustrowany placeholder o tej samej kompozycji. Leży NAJNIŻEJ (z-0), pod
           wszystkimi warstwami gradientu/winiety poniżej — dzięki temu tekst po lewej
@@ -149,6 +155,7 @@ export function HeroSection() {
           </ScrollReveal>
         )}
       </div>
-    </section>
+      </section>
+    </div>
   );
 }

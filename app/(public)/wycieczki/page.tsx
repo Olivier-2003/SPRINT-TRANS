@@ -10,6 +10,7 @@ export default async function TripsPage() {
   return (
     <div className="flex-1">
       <section className="relative overflow-visible bg-brand-navy py-16 text-white md:py-24">
+        <SectionWaveDivider position="top" fill="var(--color-brand-navy)" />
         <SectionWaveDivider position="bottom" fill="var(--background)" />
         <div
           aria-hidden="true"
