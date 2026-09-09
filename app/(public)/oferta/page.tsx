@@ -80,13 +80,13 @@ export default async function OfferPage() {
               </div>
             </div>
           </div>
-          <div className="relative mx-auto w-full max-w-sm lg:max-w-none">
+          <div className="relative mx-auto w-full max-w-sm lg:mx-0 lg:ml-auto lg:max-w-md">
             <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-[linear-gradient(135deg,color-mix(in_oklch,var(--color-primary),white_18%),var(--color-primary))] opacity-20 blur-2xl" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/oferta/oferta-hero-bus.png"
               alt="Autobus SPRINT-TRANS w trasie"
-              className="aspect-square w-full rounded-3xl object-cover shadow-2xl ring-1 ring-white/15"
+              className="aspect-4/3 w-full rounded-2xl object-cover shadow-2xl ring-1 ring-white/15"
             />
           </div>
         </div>
