@@ -41,42 +41,50 @@ export default async function OfferPage() {
     <div className="flex-1">
       <section className="relative overflow-visible bg-brand-navy py-8 text-white md:py-12">
         <SectionWaveDivider position="bottom" fill="var(--color-brand-navy)" />
-        <div className="relative mx-auto grid max-w-[1600px] items-center gap-12 px-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16 lg:px-8">
-          <div>
-            <h1 className="max-w-2xl text-2xl font-bold tracking-tight sm:text-3xl">
-              Oferta przewozów SPRINT-TRANS
-            </h1>
-            <p className="mt-3 max-w-2xl text-base leading-relaxed text-brand-navy-muted">
-              Linie regularne, wynajem autobusów oraz zorganizowane wycieczki —
-              wszystko w jednym miejscu.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 transition-colors duration-300 hover:bg-white/10">
-                <div className="text-xl font-bold">
-                  <CountUp target={buses.length} />
-                </div>
-                <div className="text-xs text-brand-navy-muted">autobusów we flocie</div>
+        <div
+          aria-hidden="true"
+          className="absolute top-0 left-1/5 size-72 -translate-y-1/2 rounded-full bg-primary/20 blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute right-1/4 bottom-0 size-56 translate-y-1/3 rounded-full bg-primary/15 blur-3xl"
+        />
+        <div className="relative mx-auto flex max-w-[1600px] flex-col items-center gap-4 px-6 text-center lg:px-8">
+          <h1 className="max-w-2xl text-2xl font-bold tracking-tight sm:text-3xl">
+            Oferta przewozów SPRINT-TRANS
+          </h1>
+          <p className="max-w-2xl text-base leading-relaxed text-brand-navy-muted">
+            Linie regularne, wynajem autobusów oraz zorganizowane wycieczki — wszystko w jednym
+            miejscu.
+          </p>
+          <div className="mt-2 flex flex-wrap justify-center gap-3">
+            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 transition-colors duration-300 hover:bg-white/10">
+              <div className="text-xl font-bold">
+                <CountUp target={buses.length} />
               </div>
-              <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 transition-colors duration-300 hover:bg-white/10">
-                <div className="text-xl font-bold">
-                  <CountUp target={lines.length} />
-                </div>
-                <div className="text-xs text-brand-navy-muted">
-                  {lines.length === 1 ? "linia regularna" : "linii regularnych"}
-                </div>
+              <div className="text-xs text-brand-navy-muted">autobusów we flocie</div>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 transition-colors duration-300 hover:bg-white/10">
+              <div className="text-xl font-bold">
+                <CountUp target={lines.length} />
+              </div>
+              <div className="text-xs text-brand-navy-muted">
+                {lines.length === 1 ? "linia regularna" : "linii regularnych"}
               </div>
             </div>
           </div>
-          <div className="relative mx-auto w-full max-w-2xl lg:mx-0 lg:ml-auto lg:max-w-none">
-            <div className="absolute -inset-6 -z-10 rounded-[2.5rem] bg-[linear-gradient(135deg,color-mix(in_oklch,var(--color-primary),white_18%),var(--color-primary))] opacity-20 blur-3xl" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/oferta/oferta-hero-bus.png"
-              alt="Autobus SPRINT-TRANS w trasie"
-              className="aspect-4/3 w-full rounded-2xl object-cover shadow-2xl ring-1 ring-white/15"
-            />
-          </div>
         </div>
+      </section>
+
+      <section className="relative mx-auto max-w-[1600px] px-6 pt-14 pb-4 md:pt-20 lg:px-8">
+        <ScrollReveal className="relative mx-auto aspect-video w-full max-w-4xl overflow-hidden rounded-3xl shadow-xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/oferta/oferta-hero-bus.png"
+            alt="Autobus SPRINT-TRANS w trasie"
+            className="h-full w-full object-cover"
+          />
+        </ScrollReveal>
       </section>
 
       <section className="mx-auto max-w-[1600px] px-6 py-14 md:py-20 lg:px-8">
