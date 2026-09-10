@@ -18,21 +18,20 @@ export default function AboutPage() {
       <section className="relative mx-auto max-w-[1600px] px-6 pt-14 pb-4 md:pt-20 lg:px-8">
         <ScrollReveal className="mx-auto flex max-w-3xl flex-col items-center gap-4 text-center">
           <p className="text-lg leading-relaxed text-muted-foreground">
-            SPRINT-TRANS zajmuje się przewozem osób autobusami — obsługujemy linie regularne,
-            wynajem autokarów na wycieczki oraz przewozy okazjonalne i grupowe. Naszym celem jest
-            zapewnienie pasażerom bezpiecznego i komfortowego przejazdu, niezależnie od trasy.
+            SPRINT-TRANS to licencjonowana i certyfikowana firma transportowa, działająca od 25
+            lat, która stawia na najwyższe standardy przewozu osób. Naszą misją jest realizowanie
+            usług transportowych, które łączą w sobie punktualność, bezpieczeństwo i komfort.
           </p>
           <p className="text-lg leading-relaxed text-muted-foreground">
-            Stawiamy na punktualność, sprawną obsługę i indywidualne podejście do każdego
-            zlecenia — od pojedynczego przejazdu po regularną współpracę z firmami i
-            instytucjami. [Pełna historia i szczegóły firmy zostaną uzupełnione przez
-            SPRINT-TRANS.]
+            Specjalizujemy się w wynajmie nowoczesnych pojazdów wraz z wykwalifikowaną kadrą
+            kierowców, dostosowując ofertę do indywidualnych potrzeb zarówno klientów biznesowych,
+            jak i prywatnych.
           </p>
         </ScrollReveal>
         {hasHeroImage && (
           <ScrollReveal
             delay={150}
-            className="relative mx-auto mt-10 aspect-video w-full max-w-4xl overflow-hidden rounded-3xl shadow-xl"
+            className="relative mx-auto mt-10 aspect-4/3 w-full max-w-3xl overflow-hidden rounded-3xl shadow-xl"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={`/${HERO_IMAGE_PATH}`} alt="SPRINT-TRANS" className="h-full w-full object-cover" />

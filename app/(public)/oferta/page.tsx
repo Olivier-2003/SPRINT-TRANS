@@ -77,7 +77,17 @@ export default async function OfferPage() {
       </section>
 
       <section className="relative mx-auto max-w-[1600px] px-6 pt-14 pb-4 md:pt-20 lg:px-8">
-        <ScrollReveal className="relative mx-auto aspect-video w-full max-w-4xl overflow-hidden rounded-3xl shadow-xl">
+        <ScrollReveal className="mx-auto mb-10 flex max-w-3xl flex-col items-center gap-4 text-center">
+          <p className="text-lg leading-relaxed text-muted-foreground">
+            Nasza flota nowoczesnych autobusów i wykwalifikowana kadra kierowców zapewniają
+            komfortowy, bezpieczny przejazd na każdej trasie — od codziennych dojazdów liniami
+            regularnymi, przez wynajem autokaru na eventy, po zorganizowane wycieczki.
+          </p>
+        </ScrollReveal>
+        <ScrollReveal
+          delay={150}
+          className="relative mx-auto aspect-square w-full max-w-2xl overflow-hidden rounded-3xl shadow-xl"
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/oferta/oferta-hero-bus.png"
