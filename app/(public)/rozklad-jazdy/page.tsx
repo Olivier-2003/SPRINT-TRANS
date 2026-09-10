@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,7 +24,7 @@ export default function SchedulePage() {
             Rozkład jazdy linii regularnych
           </h1>
           <p className="max-w-2xl text-base leading-relaxed text-brand-navy-muted">
-            Wybierz kierunek, aby zobaczyć aktualny rozkład jazdy.
+            Linia regularna Barcin – Inowrocław
           </p>
         </div>
       </section>
@@ -41,7 +40,7 @@ export default function SchedulePage() {
                 <CardContent className="flex flex-col gap-5">
                   <p className="text-base text-muted-foreground">{timetable.description}</p>
                   <Button
-                    render={<Link href={`/rozklad-jazdy/${timetable.id}`} />}
+                    render={<a href={timetable.pdfPath} target="_blank" rel="noopener noreferrer" />}
                     nativeButton={false}
                     className="w-fit gap-1.5 rounded-full px-6 text-base"
                   >

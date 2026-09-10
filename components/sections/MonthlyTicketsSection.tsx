@@ -7,30 +7,32 @@ import { SectionWaveDivider } from "@/components/animations/SectionWaveDivider";
 const TICKET_ITEMS = [
   {
     icon: Percent,
-    title: "Ulgi ustawowe",
-    description: "Honorujemy odpowiednie ulgi ustawowe przysługujące pasażerom.",
+    title: "Honorujemy wszystkie ulgi ustawowe",
+    description:
+      "Zapewniamy pełen dostęp do zniżek dla uczniów, studentów i innych osób uprawnionych. Podróżuj na naszej trasie taniej, po prostu korzystając ze swoich praw.",
   },
   {
     icon: Ticket,
-    title: "Zakup biletu miesięcznego",
-    description: "Możliwość zakupu biletu miesięcznego na regularne dojazdy.",
+    title: "Istnieje możliwość zakupu biletu miesięcznego",
+    description:
+      "Ułatwiamy codzienne dojazdy do szkoły i pracy. Pierwszy zakup jest bardzo prosty – zapraszamy do biura naszej firmy, gdzie wyrobimy dla Ciebie imienną kartę pasażera.",
   },
   {
     icon: RefreshCw,
-    title: "Przedłużenie / doładowanie",
-    description: "Bilet miesięczny można przedłużyć na kolejny miesiąc.",
+    title: "Oszczędzaj czas każdego miesiąca",
+    description:
+      "Po otrzymaniu karty, swój bilet miesięczny możesz doładować po 25 dniu każdego miesiąca bezpośrednio u kierowcy lub stacjonarnie w godzinach pracy biura.",
   },
   {
     icon: Copy,
-    title: "Zgubiony bilet / duplikat",
-    description: "W razie zgubienia biletu skontaktuj się w sprawie duplikatu.",
+    title: "Zgubiłeś bilet? To nie problem",
+    description:
+      "Zgubiłeś/Zgubiłaś swój bilet? Nie musisz kupować go od nowa. Zgłoś się do biura firmy w celu wyrobienia nowej karty. Szybko wydamy duplikat, którego koszt to 30 zł.",
   },
 ];
 
 /**
- * Pełna sekcja "Bilety miesięczne" — używana na stronie /rozklad-jazdy. Celowo
- * bez cen/regulaminu (dane nieuzupełnione przez SPRINT-TRANS); wyłącznie opis
- * dostępnych opcji + jedno jasne CTA do kontaktu.
+ * Pełna sekcja "Bilety miesięczne" — używana na stronie /rozklad-jazdy.
  */
 export function MonthlyTicketsSection() {
   return (

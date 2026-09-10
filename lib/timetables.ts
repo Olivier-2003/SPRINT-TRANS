@@ -8,23 +8,20 @@ export interface TimetableEntry {
 /**
  * Statyczna konfiguracja rozkładów jazdy (NIE dane z bazy) — dokładnie 2 pozycje,
  * zgodnie z ustaleniem, że publiczna strona pokazuje tylko realne, gotowe rozkłady.
- * Aktualizacja rozkładu to wyłącznie podmiana pliku PDF pod wskazaną ścieżką w
- * `public/timetables/`, bez zmian w kodzie strony. Nazwy/opisy poniżej są jawnymi
- * placeholderami do uzupełnienia przez SPRINT-TRANS — nie zawierają wymyślonych
- * godzin ani tras.
+ * `pdfPath` wskazuje na realne pliki PDF hostowane na sprinttrans.pl.
  */
 export const TIMETABLES: TimetableEntry[] = [
   {
-    id: "linia-1",
-    name: "Rozkład jazdy — Linia 1 (nazwa do uzupełnienia)",
-    description: "Kierunek i opis trasy zostaną uzupełnione przez SPRINT-TRANS.",
-    pdfPath: "/timetables/linia-1.pdf",
+    id: "kierunek-inowroclaw",
+    name: "Rozkład jazdy — Kierunek Inowrocław",
+    description: "Aktualny rozkład jazdy linii regularnej w kierunku Inowrocławia.",
+    pdfPath: "https://sprinttrans.pl/wp-content/uploads/2026/03/kierunek-inowroclaw.pdf",
   },
   {
-    id: "linia-2",
-    name: "Rozkład jazdy — Linia 2 (nazwa do uzupełnienia)",
-    description: "Kierunek i opis trasy zostaną uzupełnione przez SPRINT-TRANS.",
-    pdfPath: "/timetables/linia-2.pdf",
+    id: "kierunek-barcin",
+    name: "Rozkład jazdy — Kierunek Barcin",
+    description: "Aktualny rozkład jazdy linii regularnej w kierunku Barcina.",
+    pdfPath: "https://sprinttrans.pl/wp-content/uploads/2026/03/kierunek-barcin.pdf",
   },
 ];
 

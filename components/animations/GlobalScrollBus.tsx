@@ -50,7 +50,7 @@ function alongPath(waypoints: Waypoint[], t: number): number {
 // layoutu (NIE tylko przy krawędziach), tak by autobus był wyraźnym, zauważalnym
 // motywem przejeżdżającym przez stronę w trakcie scrollowania.
 const HORIZONTAL_PATH: Waypoint[] = [
-  { t: 0, value: 15 },
+  { t: 0, value: 19 },
   { t: 0.25, value: 73 },
   { t: 0.5, value: 32 },
   { t: 0.75, value: 68 },
@@ -62,7 +62,7 @@ const HORIZONTAL_PATH: Waypoint[] = [
 // ryzyka, że "zgubi się" w pustych partiach strony — może więc mieć szerszy,
 // bardziej żywy zakres ruchu.
 const VERTICAL_PATH: Waypoint[] = [
-  { t: 0, value: 20 },
+  { t: 0, value: 22 },
   { t: 0.2, value: 58 },
   { t: 0.4, value: 24 },
   { t: 0.6, value: 66 },
