@@ -36,7 +36,7 @@ export function TimetableSearch() {
   }, [results]);
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+    <div className="relative z-30 mx-auto flex w-full max-w-3xl flex-col gap-6">
       <div className="relative">
         <Search className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground" />
         <input
@@ -50,7 +50,7 @@ export function TimetableSearch() {
           className="h-14 w-full rounded-2xl border border-border bg-card pr-4 pl-12 text-base shadow-sm outline-none focus:border-primary focus:ring-3 focus:ring-primary/20"
         />
         {suggestions.length > 0 && (
-          <div className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-20 overflow-hidden rounded-2xl border border-border bg-card shadow-lg">
+          <div className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-30 overflow-hidden rounded-2xl border border-border bg-card shadow-lg">
             {suggestions.map((name) => (
               <button
                 key={name}

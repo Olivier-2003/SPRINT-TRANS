@@ -55,7 +55,7 @@ export default function SchedulePage() {
         </div>
       </div>
 
-      <section className="mx-auto w-full max-w-[1600px] px-6 pb-14 md:pb-16 lg:px-8">
+      <section className="relative z-10 mx-auto w-full max-w-[1600px] px-6 pb-14 md:pb-16 lg:px-8">
         <ScrollReveal className="mb-8 flex flex-col items-center gap-3 text-center">
           <span className="text-sm font-semibold tracking-[0.2em] text-primary uppercase">Wyszukiwarka</span>
           <h2 className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
