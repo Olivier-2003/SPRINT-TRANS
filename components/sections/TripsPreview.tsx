@@ -49,12 +49,12 @@ export function TripsPreview({ trips }: { trips: TripWithPhotos[] }) {
           {[1, 2, 3].map((n) => (
             <ScrollReveal key={n} delay={n * 90}>
               <div className="flex h-full flex-col overflow-hidden rounded-xl border border-dashed border-border">
-                <div className="flex aspect-video flex-col items-center justify-center gap-2 bg-muted text-sm font-medium text-muted-foreground">
-                  <ImageOff className="size-7" />
+                <div className="flex aspect-video flex-col items-center justify-center gap-3 bg-muted text-base font-medium text-muted-foreground">
+                  <ImageOff className="size-10" />
                   Zdjęcie wkrótce
                 </div>
-                <div className="flex flex-col gap-1 px-6 pt-5 pb-6">
-                  <p className="text-xl font-semibold text-muted-foreground">Wycieczka — wkrótce</p>
+                <div className="flex flex-col gap-1.5 px-6 pt-6 pb-7">
+                  <p className="text-2xl font-semibold text-muted-foreground">Wycieczka — wkrótce</p>
                   <p className="text-base text-muted-foreground/70">Szczegóły oferty w przygotowaniu.</p>
                 </div>
               </div>

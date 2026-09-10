@@ -8,16 +8,16 @@ type TripWithPhotos = Trip & { photos: TripPhoto[] };
 export function TripsGrid({ trips }: { trips: TripWithPhotos[] }) {
   if (trips.length === 0) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((n) => (
           <div key={n} className="overflow-hidden rounded-xl border border-dashed border-border">
-            <div className="flex aspect-video flex-col items-center justify-center gap-2 bg-muted text-sm font-medium text-muted-foreground">
-              <ImageOff className="size-7" />
+            <div className="flex aspect-video flex-col items-center justify-center gap-3 bg-muted text-base font-medium text-muted-foreground">
+              <ImageOff className="size-10" />
               Zdjęcie wkrótce
             </div>
-            <div className="flex flex-col gap-1 p-4">
-              <p className="text-base font-semibold text-muted-foreground">Wycieczka — wkrótce</p>
-              <p className="text-sm text-muted-foreground/70">Szczegóły oferty w przygotowaniu.</p>
+            <div className="flex flex-col gap-1.5 p-6">
+              <p className="text-xl font-semibold text-muted-foreground">Wycieczka — wkrótce</p>
+              <p className="text-base text-muted-foreground/70">Szczegóły oferty w przygotowaniu.</p>
             </div>
           </div>
         ))}
