@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 import { SectionWaveDivider } from "@/components/animations/SectionWaveDivider";
 import { MonthlyTicketsSection } from "@/components/sections/MonthlyTicketsSection";
+import { TimetableSearch } from "@/components/public/schedule/TimetableSearch";
 import { TIMETABLES } from "@/lib/timetables";
 
 export default function SchedulePage() {
@@ -53,6 +54,21 @@ export default function SchedulePage() {
           ))}
         </div>
       </div>
+
+      <section className="mx-auto w-full max-w-[1600px] px-6 pb-14 md:pb-16 lg:px-8">
+        <ScrollReveal className="mb-8 flex flex-col items-center gap-3 text-center">
+          <span className="text-sm font-semibold tracking-[0.2em] text-primary uppercase">Wyszukiwarka</span>
+          <h2 className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
+            Znajdź połączenie z Twojego przystanku
+          </h2>
+          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+            Wybierz przystanek, aby zobaczyć godziny odjazdów w obu kierunkach.
+          </p>
+        </ScrollReveal>
+        <ScrollReveal delay={100}>
+          <TimetableSearch />
+        </ScrollReveal>
+      </section>
 
       <MonthlyTicketsSection />
     </div>
