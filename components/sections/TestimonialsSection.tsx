@@ -1,4 +1,4 @@
-import { Star, Quote } from "lucide-react";
+import { Star, Sparkles, ShieldCheck, Building2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 
@@ -7,17 +7,24 @@ import { ScrollReveal } from "@/components/animations/ScrollReveal";
  * prawdziwych opinii klientów. Brak dedykowanego modelu bazy dla opinii —
  * to wyłącznie warstwa prezentacyjna, do podmiany na realne dane w przyszłości
  * (np. własny model `Testimonial` albo integracja z Google/Facebook Reviews).
+ *
+ * Każda opinia ma inną ikonę dobraną do treści (czystość/komfort, punktualność
+ * i bezpieczeństwo, współpraca biznesowa) — karty mają się od siebie wyraźnie
+ * różnić, a nie wyglądać jak kopie tego samego szablonu.
  */
 const TESTIMONIALS = [
   {
+    icon: Sparkles,
     quote: "Profesjonalna obsługa, autokar czysty i bardzo komfortowy. Polecam każdemu!",
     author: "Klient indywidualny",
   },
   {
+    icon: ShieldCheck,
     quote: "Punktualnie, bezpiecznie, wszystko na najwyższym poziomie.",
     author: "Klient indywidualny",
   },
   {
+    icon: Building2,
     quote: "Korzystamy regularnie z przewozów pracowniczych. Zero problemów.",
     author: "Klient biznesowy",
   },
@@ -46,7 +53,9 @@ export function TestimonialsSection() {
               >
                 <CardContent className="flex flex-col gap-5 px-8 py-9">
                   <div className="flex items-center justify-between">
-                    <Quote className="size-8 text-primary" />
+                    <div className="flex size-11 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                      <t.icon className="size-5" />
+                    </div>
                     <div className="flex gap-1 text-amber-400">
                       {Array.from({ length: 5 }).map((_, star) => (
                         <Star key={star} className="size-5 fill-current" />
