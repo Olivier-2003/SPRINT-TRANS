@@ -20,10 +20,10 @@ export default async function TripsPage() {
           className="absolute bottom-0 left-1/5 size-56 translate-y-1/3 rounded-full bg-primary/15 blur-3xl"
         />
         <div className="relative mx-auto flex max-w-[1600px] flex-col items-center gap-4 px-6 text-center lg:px-8">
-          <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="max-w-2xl text-2xl font-bold tracking-tight sm:text-3xl">
             Wycieczki organizowane przez SPRINT-TRANS
           </h1>
-          <p className="max-w-2xl text-lg leading-relaxed text-brand-navy-muted">
+          <p className="max-w-2xl text-base leading-relaxed text-brand-navy-muted">
             Wybrane propozycje wycieczek — sprawdź aktualną ofertę i szczegóły każdego wyjazdu.
           </p>
         </div>

@@ -21,10 +21,10 @@ export default function SchedulePage() {
           className="absolute right-1/4 bottom-0 size-56 translate-y-1/3 rounded-full bg-primary/15 blur-3xl"
         />
         <div className="relative mx-auto flex max-w-[1600px] flex-col items-center gap-4 px-6 text-center lg:px-8">
-          <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="max-w-2xl text-2xl font-bold tracking-tight sm:text-3xl">
             Rozkład jazdy linii regularnych
           </h1>
-          <p className="max-w-2xl text-lg leading-relaxed text-brand-navy-muted">
+          <p className="max-w-2xl text-base leading-relaxed text-brand-navy-muted">
             Wybierz kierunek, aby zobaczyć aktualny rozkład jazdy.
           </p>
         </div>

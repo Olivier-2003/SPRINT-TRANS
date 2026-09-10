@@ -43,25 +43,25 @@ export default async function OfferPage() {
         <SectionWaveDivider position="bottom" fill="var(--color-brand-navy)" />
         <div className="relative mx-auto grid max-w-[1600px] items-center gap-12 px-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16 lg:px-8">
           <div>
-            <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
+            <h1 className="max-w-2xl text-2xl font-bold tracking-tight sm:text-3xl">
               Oferta przewozów SPRINT-TRANS
             </h1>
-            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-brand-navy-muted">
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-brand-navy-muted">
               Linie regularne, wynajem autobusów oraz zorganizowane wycieczki —
               wszystko w jednym miejscu.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 transition-colors duration-300 hover:bg-white/10">
-                <div className="text-3xl font-bold">
+            <div className="mt-5 flex flex-wrap gap-3">
+              <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 transition-colors duration-300 hover:bg-white/10">
+                <div className="text-xl font-bold">
                   <CountUp target={buses.length} />
                 </div>
-                <div className="text-sm text-brand-navy-muted">autobusów we flocie</div>
+                <div className="text-xs text-brand-navy-muted">autobusów we flocie</div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 transition-colors duration-300 hover:bg-white/10">
-                <div className="text-3xl font-bold">
+              <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 transition-colors duration-300 hover:bg-white/10">
+                <div className="text-xl font-bold">
                   <CountUp target={lines.length} />
                 </div>
-                <div className="text-sm text-brand-navy-muted">
+                <div className="text-xs text-brand-navy-muted">
                   {lines.length === 1 ? "linia regularna" : "linii regularnych"}
                 </div>
               </div>

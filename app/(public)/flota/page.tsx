@@ -18,22 +18,22 @@ export default function FleetPage() {
           className="absolute right-1/5 bottom-0 size-56 translate-y-1/3 rounded-full bg-primary/15 blur-3xl"
         />
         <div className="relative mx-auto flex max-w-[1600px] flex-col items-center gap-4 px-6 text-center lg:px-8">
-          <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="max-w-2xl text-2xl font-bold tracking-tight sm:text-3xl">
             Nasza flota
           </h1>
-          <p className="max-w-2xl text-lg leading-relaxed text-brand-navy-muted">
+          <p className="max-w-2xl text-base leading-relaxed text-brand-navy-muted">
             Autobusy SPRINT-TRANS dostępne do wynajmu i obsługi linii regularnych.
           </p>
-          <div className="mt-4 flex flex-wrap justify-center gap-4">
-            <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 transition-colors duration-300 hover:bg-white/10">
-              <div className="text-3xl font-bold">
+          <div className="mt-2 flex flex-wrap justify-center gap-3">
+            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 transition-colors duration-300 hover:bg-white/10">
+              <div className="text-xl font-bold">
                 <CountUp target={3} />
               </div>
-              <div className="text-sm text-brand-navy-muted">kategorie pojazdów</div>
+              <div className="text-xs text-brand-navy-muted">kategorie pojazdów</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 transition-colors duration-300 hover:bg-white/10">
-              <div className="text-3xl font-bold">6-68</div>
-              <div className="text-sm text-brand-navy-muted">miejsc</div>
+            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 transition-colors duration-300 hover:bg-white/10">
+              <div className="text-xl font-bold">6-68</div>
+              <div className="text-xs text-brand-navy-muted">miejsc</div>
             </div>
           </div>
         </div>
